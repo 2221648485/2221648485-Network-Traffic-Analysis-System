@@ -56,4 +56,5 @@ public class ForeignAppAccessLog implements Serializable {
 
         return log;
     }
+
 }

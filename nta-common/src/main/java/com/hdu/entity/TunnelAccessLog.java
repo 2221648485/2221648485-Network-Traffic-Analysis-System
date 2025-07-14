@@ -69,4 +69,5 @@ public class TunnelAccessLog implements Serializable {
         log.setDownBytes(parts[16].isEmpty() ? null : Long.valueOf(parts[16]));
         return log;
     }
+
 }

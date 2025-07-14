@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.hdu</groupId>
-    <artifactId>service</artifactId>
+    <artifactId>nta-service-api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>nta-service-api</name>
     <description>nta-service-api</description>
@@ -74,7 +74,7 @@
         </dependency>
         <dependency>
             <groupId>com.hdu</groupId>
-            <artifactId>common</artifactId>
+            <artifactId>nta-common</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

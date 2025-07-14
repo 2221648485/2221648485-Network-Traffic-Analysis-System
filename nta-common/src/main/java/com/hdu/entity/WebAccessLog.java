@@ -37,6 +37,7 @@ public class WebAccessLog implements Serializable {
     private Long downBytes;         // 下行包大小，单位Byte
     private String credibility;     // 可信度，假设是小数，如果是整数可改为Integer
     private Integer uid = 1;        // 次序
+
     public static WebAccessLog fromString(String line) {
         // 检查行是否为空或空白
         if (line.isEmpty() || line.startsWith("#")) {
@@ -47,9 +48,6 @@ public class WebAccessLog implements Serializable {
         if (parts.length != 20) {
             // 字段数不对，返回null或抛异常
             throw new IllegalArgumentException("字段数量不正确，期望20个字段，实际：" + parts.length);
-        }
-        for (int i = 0; i < parts.length; i++) {
-            System.out.println(parts[i]);
         }
         WebAccessLog log = new WebAccessLog();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -75,4 +73,5 @@ public class WebAccessLog implements Serializable {
         log.setCredibility(parts[19]);
         return log;
     }
+
 }

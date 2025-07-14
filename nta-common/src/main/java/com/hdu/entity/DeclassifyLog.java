@@ -74,4 +74,5 @@ public class DeclassifyLog implements Serializable {
 
         return log;
     }
+
 }
