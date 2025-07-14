@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hdu.mapper.TunnelOfflineLogMapper">
+
+    <insert id="insertTunnelOfflineLogBatch">
+        INSERT IGNORE INTO tunnel_offline_log (
+        flow_id,
+        offline_time,
+        total_bytes,
+        uid
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            <if test="item.flowId != null">#{item.flowId,jdbcType=VARCHAR},</if>
+            <if test="item.flowId == null">NULL,</if>
+
+            <if test="item.offlineTime != null">#{item.offlineTime,jdbcType=TIMESTAMP},</if>
+            <if test="item.offlineTime == null">NULL,</if>
+
+            <if test="item.totalBytes != null">#{item.totalBytes,jdbcType=BIGINT},</if>
+            <if test="item.totalBytes == null">NULL,</if>
+
+            <if test="item.uid != null">#{item.uid,jdbcType=INTEGER}</if>
+            <if test="item.uid == null">NULL</if>
+            )
+        </foreach>
+    </insert>
+    <select id="listTunnelOfflineLog" resultType="com.hdu.entity.TunnelOfflineLog">
+        SELECT * FROM tunnel_offline_log
+        <where>
+            <if test="uid != null">
+                uid = #{uid}
+            </if>
+            <if test="flowId != null and flowId != ''">
+                AND flow_id = #{flowId}
+            </if>
+            <if test="begin != null">
+                AND offline_time &gt;= #{begin}
+            </if>
+            <if test="end != null">
+                AND offline_time &lt;= #{end}
+            </if>
+        </where>
+        ORDER BY offline_time DESC
+    </select>
+</mapper>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hdu.mapper.DeclassifyLogMapper">
+    <insert id="insertDeclassifyLogBatch">
+        INSERT IGNORE INTO declassify_log (
+        time,
+        flow_id,
+        phone_number,
+        imsi,
+        imei,
+        adsl_account,
+        client_ip,
+        client_port,
+        server_ip,
+        server_port,
+        client_region,
+        server_region,
+        original_file_name,
+        packet_index,
+        network_protocol,
+        app_protocol,
+        app_info,
+        host_name,
+        uid
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            <if test="item.time != null">#{item.time,jdbcType=TIMESTAMP},</if>
+            <if test="item.time == null">NULL,</if>
+
+            <if test="item.flowId != null">#{item.flowId,jdbcType=VARCHAR},</if>
+            <if test="item.flowId == null">NULL,</if>
+
+            <if test="item.phoneNumber != null">#{item.phoneNumber,jdbcType=VARCHAR},</if>
+            <if test="item.phoneNumber == null">NULL,</if>
+
+            <if test="item.imsi != null">#{item.imsi,jdbcType=VARCHAR},</if>
+            <if test="item.imsi == null">NULL,</if>
+
+            <if test="item.imei != null">#{item.imei,jdbcType=VARCHAR},</if>
+            <if test="item.imei == null">NULL,</if>
+
+            <if test="item.adslAccount != null">#{item.adslAccount,jdbcType=VARCHAR},</if>
+            <if test="item.adslAccount == null">NULL,</if>
+
+            <if test="item.clientIp != null">#{item.clientIp,jdbcType=VARCHAR},</if>
+            <if test="item.clientIp == null">NULL,</if>
+
+            <if test="item.clientPort != null">#{item.clientPort,jdbcType=INTEGER},</if>
+            <if test="item.clientPort == null">NULL,</if>
+
+            <if test="item.serverIp != null">#{item.serverIp,jdbcType=VARCHAR},</if>
+            <if test="item.serverIp == null">NULL,</if>
+
+            <if test="item.serverPort != null">#{item.serverPort,jdbcType=INTEGER},</if>
+            <if test="item.serverPort == null">NULL,</if>
+
+            <if test="item.clientRegion != null">#{item.clientRegion,jdbcType=VARCHAR},</if>
+            <if test="item.clientRegion == null">NULL,</if>
+
+            <if test="item.serverRegion != null">#{item.serverRegion,jdbcType=VARCHAR},</if>
+            <if test="item.serverRegion == null">NULL,</if>
+
+            <if test="item.originalFileName != null">#{item.originalFileName,jdbcType=VARCHAR},</if>
+            <if test="item.originalFileName == null">NULL,</if>
+
+            <if test="item.packetIndex != null">#{item.packetIndex,jdbcType=INTEGER},</if>
+            <if test="item.packetIndex == null">NULL,</if>
+
+            <if test="item.networkProtocol != null">#{item.networkProtocol,jdbcType=VARCHAR},</if>
+            <if test="item.networkProtocol == null">NULL,</if>
+
+            <if test="item.appProtocol != null">#{item.appProtocol,jdbcType=VARCHAR},</if>
+            <if test="item.appProtocol == null">NULL,</if>
+
+            <if test="item.appInfo != null">#{item.appInfo,jdbcType=VARCHAR},</if>
+            <if test="item.appInfo == null">NULL,</if>
+
+            <if test="item.hostName != null">#{item.hostName,jdbcType=VARCHAR},</if>
+            <if test="item.hostName == null">NULL,</if>
+
+            <if test="item.uid != null">#{item.uid,jdbcType=INTEGER}</if>
+            <if test="item.uid == null">NULL</if>
+            )
+        </foreach>
+    </insert>
+
+    <select id="listDeclassifyLog" resultType="com.hdu.entity.DeclassifyLog">
+        SELECT * FROM declassify_log
+        <where>
+            <if test="uid != null">
+                uid = #{uid}
+            </if>
+            <if test="flowId != null and flowId != ''">
+                AND flow_id = #{flowId}
+            </if>
+            <if test="phoneNumber != null and phoneNumber != ''">
+                AND phone_number = #{phoneNumber}
+            </if>
+            <if test="begin != null">
+                AND time &gt;= #{begin}
+            </if>
+            <if test="end != null">
+                AND time &lt;= #{end}
+            </if>
+        </where>
+        ORDER BY time DESC
+    </select>
+</mapper>

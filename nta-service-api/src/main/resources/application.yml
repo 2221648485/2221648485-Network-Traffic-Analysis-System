@@ -1,0 +1,88 @@
+# 数据库相关配置
+spring:
+  application:
+    name: hdu-traffic-analysis
+  datasource:
+    url: jdbc:mysql://localhost:3306/trafficanalysis
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  # 时间格式化
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+# 日志级别配置
+logging:
+  level:
+    com:
+      hdu:
+        controller: info
+        mapper: OFF
+        service: info
+# mybatis相关配置
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.hdu.entity
+
+# 分页插件相关配置
+pagehelper:
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+# 危险评分以及相关信息
+risk:
+  scores: # 各类风险项对应的分值配置
+    web:
+      sensitiveSite: 3           # 访问涉密网站的得分
+      vpnTool: 2                # 使用VPN工具的得分
+    tunnel:
+      riskyPort: 2              # 访问典型翻墙端口的得分
+    foreignApp:
+      Twitter: 2                # 访问Twitter的得分
+      Telegram: 2               # 访问Telegram的得分
+      Signal: 2                 # 访问Signal的得分
+      WhatsApp: 2               # 访问WhatsApp的得分
+    declassify:
+      tunnelKeyword: 3          # 解密日志中识别到“tunnel”关键字的得分
+
+  levels: # 风险等级阈值设置
+    high: 6                    # 分数 >= 6 为高风险
+    medium: 3                  # 分数 >= 3 且 < 6 为中风险
+    # 分数 < 3 为低风险
+
+  sensitiveSites: # 涉及的敏感网站类型列表
+    - 涉藏
+    - 涉恐
+    - 涉证
+    - 邪教
+
+  vpnTunnelTypes: # 支持识别的VPN隧道类型列表
+    - SS
+    - Vmess
+    - Trojian
+    - Ipsec
+    - pptp
+    - L2tp
+    - Openvpn
+
+  riskyPorts: # 典型翻墙使用的端口列表（字符串形式）
+    - "1080"
+    - "443"
+    - "7890"
+
+  foreignApps: # 境外App名称对应的提示文字
+    Twitter: "访问Twitter；"
+    Telegram: "访问Telegram；"
+    Signal: "访问Signal；"
+    WhatsApp: "访问WhatsApp；"
+
+
+    redis:
+      host: localhost
+      #auth: 123456
+      database: 0
+      port: 6379

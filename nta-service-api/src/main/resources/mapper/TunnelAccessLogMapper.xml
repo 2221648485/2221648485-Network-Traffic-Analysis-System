@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hdu.mapper.TunnelAccessLogMapper">
+
+    <insert id="insertTunnelAccessLogBatch">
+        INSERT IGNORE INTO tunnel_access_log (
+        time,
+        flow_id,
+        phone_number,
+        imsi,
+        imei,
+        adsl_account,
+        client_ip,
+        server_ip,
+        client_region,
+        server_region,
+        tunnel_type,
+        operator,
+        tool,
+        client_port,
+        server_port,
+        up_bytes,
+        down_bytes,
+        uid
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            <if test="item.time != null">#{item.time,jdbcType=TIMESTAMP},</if>
+            <if test="item.time == null">NULL,</if>
+
+            <if test="item.flowId != null">#{item.flowId,jdbcType=VARCHAR},</if>
+            <if test="item.flowId == null">NULL,</if>
+
+            <if test="item.phoneNumber != null">#{item.phoneNumber,jdbcType=VARCHAR},</if>
+            <if test="item.phoneNumber == null">NULL,</if>
+
+            <if test="item.imsi != null">#{item.imsi,jdbcType=VARCHAR},</if>
+            <if test="item.imsi == null">NULL,</if>
+
+            <if test="item.imei != null">#{item.imei,jdbcType=VARCHAR},</if>
+            <if test="item.imei == null">NULL,</if>
+
+            <if test="item.adslAccount != null">#{item.adslAccount,jdbcType=VARCHAR},</if>
+            <if test="item.adslAccount == null">NULL,</if>
+
+            <if test="item.clientIp != null">#{item.clientIp,jdbcType=VARCHAR},</if>
+            <if test="item.clientIp == null">NULL,</if>
+
+            <if test="item.serverIp != null">#{item.serverIp,jdbcType=VARCHAR},</if>
+            <if test="item.serverIp == null">NULL,</if>
+
+            <if test="item.clientRegion != null">#{item.clientRegion,jdbcType=VARCHAR},</if>
+            <if test="item.clientRegion == null">NULL,</if>
+
+            <if test="item.serverRegion != null">#{item.serverRegion,jdbcType=VARCHAR},</if>
+            <if test="item.serverRegion == null">NULL,</if>
+
+            <if test="item.tunnelType != null">#{item.tunnelType,jdbcType=VARCHAR},</if>
+            <if test="item.tunnelType == null">NULL,</if>
+
+            <if test="item.operator != null">#{item.operator,jdbcType=VARCHAR},</if>
+            <if test="item.operator == null">NULL,</if>
+
+            <if test="item.tool != null">#{item.tool,jdbcType=VARCHAR},</if>
+            <if test="item.tool == null">NULL,</if>
+
+            <if test="item.clientPort != null">#{item.clientPort,jdbcType=INTEGER},</if>
+            <if test="item.clientPort == null">NULL,</if>
+
+            <if test="item.serverPort != null">#{item.serverPort,jdbcType=INTEGER},</if>
+            <if test="item.serverPort == null">NULL,</if>
+
+            <if test="item.upBytes != null">#{item.upBytes,jdbcType=BIGINT},</if>
+            <if test="item.upBytes == null">NULL,</if>
+
+            <if test="item.downBytes != null">#{item.downBytes,jdbcType=BIGINT},</if>
+            <if test="item.downBytes == null">NULL,</if>
+
+            <if test="item.uid != null">#{item.uid,jdbcType=INTEGER}</if>
+            <if test="item.uid == null">NULL</if>
+            )
+        </foreach>
+    </insert>
+    <select id="listTunnelAccessLog" resultType="com.hdu.entity.TunnelAccessLog">
+        SELECT * FROM tunnel_access_log
+        <where>
+            <if test="uid != null">
+                uid = #{uid}
+            </if>
+            <if test="flowId != null and flowId != ''">
+                AND flow_id = #{flowId}
+            </if>
+            <if test="phoneNumber != null and phoneNumber != ''">
+                AND phone_number = #{phoneNumber}
+            </if>
+            <if test="begin != null">
+                AND time &gt;= #{begin}
+            </if>
+            <if test="end != null">
+                AND time &lt;= #{end}
+            </if>
+        </where>
+        ORDER BY time DESC
+    </select>
+</mapper>
