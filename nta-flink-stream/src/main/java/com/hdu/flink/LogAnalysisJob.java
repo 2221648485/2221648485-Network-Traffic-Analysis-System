@@ -4,6 +4,7 @@ import com.hdu.entity.*;
 import com.hdu.result.RiskResult;
 
 import com.hdu.sink.ExternalSystemSink;
+import com.hdu.utils.RedisBlacklistUpdaterFunction;
 import com.hdu.utils.RiskScoringProcessFunction;
 
 import com.hdu.utils.VPNRuleUtils;
@@ -58,6 +59,8 @@ public class LogAnalysisJob {
 
         // 4. 风险检测与评分
         DataStream<RiskResult> riskResults = unifiedWithWatermark
+                // 先让 RedisBlacklistUpdaterFunction 周期刷新黑名单缓存，并透传数据
+                .flatMap(new RedisBlacklistUpdaterFunction())
                 // 1. 识别所有可能的翻墙行为日志
                 .filter(VPNRuleUtils::isPotentialVpnLog
                 )
