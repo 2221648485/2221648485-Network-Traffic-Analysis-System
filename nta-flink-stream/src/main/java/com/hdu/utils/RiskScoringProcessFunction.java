@@ -31,7 +31,7 @@ public class RiskScoringProcessFunction extends ProcessWindowFunction<UnifiedLog
         if (matchCount == 0) return;
 
         double avgScore = totalScore / (double) matchCount;
-        double modelConfidence = AiModelClient.predictRiskConfidence(phoneNumber); // 模拟 AI 模型
+        double modelConfidence = AiModelClient.predictRiskConfidence(phoneNumber); // AI模型预测
 
         String riskLevel = "low";
         String redisKey = "vpn:risk:" + phoneNumber;

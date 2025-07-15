@@ -3,6 +3,7 @@ package com.hdu.flink;
 import com.hdu.entity.*;
 import com.hdu.result.RiskResult;
 
+import com.hdu.sink.ExternalSystemSink;
 import com.hdu.utils.RiskScoringProcessFunction;
 
 import com.hdu.utils.VPNRuleUtils;
@@ -28,7 +29,7 @@ public class LogAnalysisJob {
 
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(4);
+        // env.setParallelism(4);
 
         // 1. Kafka 配置
         Properties props = new Properties();
@@ -55,6 +56,7 @@ public class LogAnalysisJob {
                         .withTimestampAssigner((log, ts) -> Timestamp.valueOf(log.getTime()).getTime())
                 );
 
+        // 4. 风险检测与评分
         DataStream<RiskResult> riskResults = unifiedWithWatermark
                 // 1. 识别所有可能的翻墙行为日志
                 .filter(VPNRuleUtils::isPotentialVpnLog
@@ -68,6 +70,7 @@ public class LogAnalysisJob {
 
         // 5. 输出到控制台（或 Kafka / MySQL）
         riskResults.print();
+        riskResults.addSink(new ExternalSystemSink());
 
         env.execute("VPN & Sensitive Access Detection Job");
     }
