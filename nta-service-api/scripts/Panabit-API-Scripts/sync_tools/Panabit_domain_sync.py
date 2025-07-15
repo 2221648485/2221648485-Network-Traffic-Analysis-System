@@ -1,4 +1,17 @@
 import os
+import sys
+import io
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+# 当前脚本目录
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Panabit-API-Scripts 目录
+PARENT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, ".."))
+
+# 把 Panabit-API-Scripts 加到 sys.path
+sys.path.insert(0, PARENT_DIR)
 import requests
 import json
 import time
@@ -142,6 +155,7 @@ class PanabitAPI:
             # 保存域名到Redis
             print("[*] 正在保存域名到Redis...")
             self.save_domains_to_redis(temp_file, redis_key="ioc:domains")
+            self.redis.close()
 
             print("[√] 域名同步完成")
         except requests.exceptions.RequestException as e:
