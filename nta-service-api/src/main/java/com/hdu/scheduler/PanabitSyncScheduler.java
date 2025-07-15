@@ -16,26 +16,26 @@ public class PanabitSyncScheduler {
 
     private static final Path BASE_SCRIPT_PATH = Paths.get("nta-service-api", "scripts", "Panabit-API-Scripts", "sync_tools");
 
-    private static final String DOMAIN_SYNC_SCRIPT_PATH =
-            BASE_SCRIPT_PATH.resolve("Panabit_domain_sync.py").toAbsolutePath().toString();
+//    private static final String DOMAIN_SYNC_SCRIPT_PATH =
+//            BASE_SCRIPT_PATH.resolve("Panabit_domain_sync.py").toAbsolutePath().toString();
+//
+//    private static final String IP_SYNC_SCRIPT_PATH =
+//            BASE_SCRIPT_PATH.resolve("Panabit_ip_sync.py").toAbsolutePath().toString();
 
-    private static final String IP_SYNC_SCRIPT_PATH =
-            BASE_SCRIPT_PATH.resolve("Panabit_ip_sync.py").toAbsolutePath().toString();
-
-//    private static final String TEST_SCRIPT_PATH =
-//            BASE_SCRIPT_PATH.resolve("test.py").toAbsolutePath().toString();
+    private static final String TEST_SCRIPT_PATH =
+            BASE_SCRIPT_PATH.resolve("test.py").toAbsolutePath().toString();
 
 
     private static final String PYTHON_EXEC = "python";
 
-    @Scheduled(cron = "0 0 8 * * ?") // 每天早上 8 点
-//    @Scheduled(cron = "*/10 * * * * ?") // 测试 每10秒一次
+//    @Scheduled(cron = "0 0 8 * * ?") // 每天早上 8 点
+    @Scheduled(cron = "*/10 * * * * ?") // 测试 每10秒一次
     public void runPanabitSyncScript() {
         log.info("⏰ 开始执行 Panabit 黑名单同步脚本...");
 
-        runScript(DOMAIN_SYNC_SCRIPT_PATH);
-        runScript(IP_SYNC_SCRIPT_PATH);
-//        runScript(TEST_SCRIPT_PATH);
+//        runScript(DOMAIN_SYNC_SCRIPT_PATH);
+//        runScript(IP_SYNC_SCRIPT_PATH);
+        runScript(TEST_SCRIPT_PATH);
 
         log.info("✅ 所有 Panabit 同步脚本执行完成");
     }

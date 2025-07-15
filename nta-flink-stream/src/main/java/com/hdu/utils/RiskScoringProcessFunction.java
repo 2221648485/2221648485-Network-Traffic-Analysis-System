@@ -16,14 +16,14 @@ public class RiskScoringProcessFunction extends ProcessWindowFunction<UnifiedLog
                         Context context,
                         Iterable<UnifiedLog> logs,
                         Collector<RiskResult> out) throws Exception {
-
+//        System.out.println("窗口触发：" + phoneNumber + "，窗口时间：" + context.window());
         int totalScore = 0;
         int matchCount = 0;
 
         for (UnifiedLog log : logs) {
-            if (VPNRuleUtils.isInIocBlacklist(log))      totalScore += 30;
-            if (VPNRuleUtils.isDnsForeignFailed(log))    totalScore += 20;
-            if (VPNRuleUtils.isTlsSniVpn(log))           totalScore += 25;
+            if (VPNRuleUtils.isInIocBlacklist(log)) totalScore += 30;
+            if (VPNRuleUtils.isDnsForeignFailed(log)) totalScore += 20;
+            if (VPNRuleUtils.isTlsSniVpn(log)) totalScore += 25;
             if (VPNRuleUtils.isConnectSensitivePorts(log)) totalScore += 15;
             matchCount++;
         }
@@ -31,7 +31,7 @@ public class RiskScoringProcessFunction extends ProcessWindowFunction<UnifiedLog
         if (matchCount == 0) return;
 
         double avgScore = totalScore / (double) matchCount;
-        double modelConfidence = AiModelClient.predictRiskConfidence(phoneNumber); // AI模型预测
+        double modelConfidence = AiModelClient.predictRiskConfidence(logs); // AI模型预测
 
         String riskLevel = "low";
         String redisKey = "vpn:risk:" + phoneNumber;
@@ -50,7 +50,6 @@ public class RiskScoringProcessFunction extends ProcessWindowFunction<UnifiedLog
         RiskResult result = new RiskResult();
         result.setPhoneNumber(phoneNumber);
         result.setRiskScore(avgScore);
-        result.setModelConfidence(modelConfidence);
         result.setRiskLevel(riskLevel);
         result.setWindowStart(context.window().getStart());
         result.setWindowEnd(context.window().getEnd());

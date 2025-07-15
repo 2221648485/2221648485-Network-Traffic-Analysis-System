@@ -4,10 +4,8 @@ import com.hdu.entity.*;
 import com.hdu.result.RiskResult;
 
 import com.hdu.sink.ExternalSystemSink;
-import com.hdu.utils.RedisBlacklistUpdaterFunction;
-import com.hdu.utils.RiskScoringProcessFunction;
+import com.hdu.utils.*;
 
-import com.hdu.utils.VPNRuleUtils;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -18,11 +16,10 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 
-import com.hdu.utils.ParseUtils;
-
 import java.sql.Timestamp;
 import java.time.Duration;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -30,6 +27,7 @@ public class LogAnalysisJob {
 
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+//        env.getConfig().registerTypeWithKryoSerializer(LocalDateTime.class, new LocalDateTimeKryoSerializer());
         // env.setParallelism(4);
 
         // 1. Kafka 配置
@@ -38,7 +36,7 @@ public class LogAnalysisJob {
         props.setProperty("group.id", "vpn-analysis-group");
 
         FlinkKafkaConsumer<String> kafkaSource = new FlinkKafkaConsumer<>(
-                "raw_logs",
+                "test",
                 new SimpleStringSchema(),
                 props
         );
@@ -49,21 +47,19 @@ public class LogAnalysisJob {
                 .addSource(kafkaSource)
                 .map(ParseUtils::parseToUnifiedLog)
                 .filter(Objects::nonNull);
-
         // 3. 时间戳与水位线
         DataStream<UnifiedLog> unifiedWithWatermark = unifiedStream
                 .assignTimestampsAndWatermarks(WatermarkStrategy
                         .<UnifiedLog>forBoundedOutOfOrderness(Duration.ofSeconds(10))
-                        .withTimestampAssigner((log, ts) -> Timestamp.valueOf(log.getTime()).getTime())
+                        .withTimestampAssigner((log, ts) -> Timestamp.valueOf(log.getTimeString()).getTime())
+                        .withIdleness(Duration.ofSeconds(30)) // ✅ 必加，保证 watermark 推进
                 );
-
         // 4. 风险检测与评分
         DataStream<RiskResult> riskResults = unifiedWithWatermark
                 // 先让 RedisBlacklistUpdaterFunction 周期刷新黑名单缓存，并透传数据
                 .flatMap(new RedisBlacklistUpdaterFunction())
                 // 1. 识别所有可能的翻墙行为日志
-                .filter(VPNRuleUtils::isPotentialVpnLog
-                )
+                .filter(VPNRuleUtils::isPotentialVpnLog)
                 // 2. 使用手机号作为用户标识聚合
                 .keyBy(UnifiedLog::getPhoneNumber)
                 // 3. 滚动 5 分钟窗口

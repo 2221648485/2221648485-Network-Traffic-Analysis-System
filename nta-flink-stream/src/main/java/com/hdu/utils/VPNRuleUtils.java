@@ -51,9 +51,10 @@ public class VPNRuleUtils {
     }
 
     public static boolean isPotentialVpnLog(UnifiedLog log) {
-        return isInIocBlacklist(log)
-                || isDnsForeignFailed(log)
-                || isTlsSniVpn(log)
-                || isConnectSensitivePorts(log);
+        return true;
+//        return isInIocBlacklist(log)
+//                || isDnsForeignFailed(log)
+//                || isTlsSniVpn(log)
+//                || isConnectSensitivePorts(log);
     }
 }

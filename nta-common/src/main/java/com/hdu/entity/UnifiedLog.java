@@ -14,6 +14,7 @@ public class UnifiedLog implements Serializable {
     /** 公共字段（几乎所有日志都有） */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime time;        // 时间（上线、访问等）
+    private String timeString;         // 时间字符串（用于解析）
     private String type;               // 日志类型，如 web_act、tw_act、app_act 等
     private String phoneNumber;        // 手机号
     private String imsi;               // IMSI
@@ -61,4 +62,10 @@ public class UnifiedLog implements Serializable {
 
     /** 原始行（可选） */
     private String rawLine;            // Kafka 消息原始内容
+
+
+    public UnifiedLog setType(String type) {
+        this.type = type;
+        return this;
+    }
 }

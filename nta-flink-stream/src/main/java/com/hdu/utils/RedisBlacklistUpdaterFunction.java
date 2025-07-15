@@ -28,11 +28,12 @@ public class RedisBlacklistUpdaterFunction extends RichFlatMapFunction<UnifiedLo
     private final String domainBlacklistKey = "ioc:domain";
 
     // 拉取周期，单位秒
-    private final long refreshPeriodSeconds = 300L;
+    private final long refreshPeriodSeconds = 10000*300L;
 
     @Override
     public void open(Configuration parameters) throws Exception {
         super.open(parameters);
+        // System.out.println("[RedisBlacklistUpdater] 实例初始化，任务ID: " + getRuntimeContext().getTaskNameWithSubtasks());
         jedis = new Jedis(redisHost, redisPort);
         // jedis.auth("123456");
 
