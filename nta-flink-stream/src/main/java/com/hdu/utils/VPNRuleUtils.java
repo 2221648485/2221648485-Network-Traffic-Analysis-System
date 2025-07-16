@@ -1,60 +1,84 @@
 package com.hdu.utils;
 
+import com.hdu.entity.RiskRules;
 import com.hdu.entity.UnifiedLog;
 import com.hdu.entity.BlacklistStore;
+
 import java.util.Set;
 
 public class VPNRuleUtils {
-    public static boolean isInIocBlacklist(UnifiedLog log) {
-        Set<String> iocIpSet = BlacklistStore.getIocServerIps();   // IOC中的恶意IP集合
-        Set<String> iocHostSet = BlacklistStore.getIocHostnames(); // IOC中的恶意主机名集合
 
-        return (log.getServerIp() != null && iocIpSet.contains(log.getServerIp()))
-                || (log.getHostName() != null && iocHostSet.contains(log.getHostName()));
+    private static final RiskRules rules = ConfigUtils.getRules();
+
+    public static boolean isInIocBlacklist(UnifiedLog log) {
+        if (log == null) return false;
+        Set<String> iocIpSet = BlacklistStore.getIocServerIps();
+        Set<String> iocHostSet = BlacklistStore.getIocHostnames();
+        return (notEmpty(log.getServerIp()) && iocIpSet.contains(log.getServerIp()))
+                || (notEmpty(log.getHostName()) && iocHostSet.contains(log.getHostName()));
     }
 
-
     public static boolean isDnsForeignFailed(UnifiedLog log) {
-        return "declassify_act".equals(log.getType())
-                && log.getAppProtocol() != null
-                && log.getAppProtocol().equalsIgnoreCase("dns")
-                && log.getServerRegion() != null
-                && log.getServerRegion().contains("境外")
-                && log.getAppInfo() != null
-                && log.getAppInfo().toLowerCase().contains("failed");
+        if (log == null) return false;
+        return typeEquals(log, "declassify_act")
+                && stringEqualsIgnoreCase(log.getAppProtocol(), "dns")
+                && contains(log.getServerRegion(), "境外")
+                && containsAnyKeyword(safeLower(log.getAppInfo()), rules.getDnsFailedKeywords());
     }
 
     public static boolean isTlsSniVpn(UnifiedLog log) {
-        return "declassify_act".equals(log.getType())
-                && log.getAppProtocol() != null
-                && log.getAppProtocol().equalsIgnoreCase("tls")
-                && log.getHostName() != null
-                && isKnownVpnSni(log.getHostName());
+        if (log == null) return false;
+        return typeEquals(log, "declassify_act")
+                && stringEqualsIgnoreCase(log.getAppProtocol(), "tls")
+                && notEmpty(log.getHostName())
+                && containsAnyKeyword(log.getHostName().toLowerCase(), rules.getVpnSni());
     }
 
-    private static boolean isKnownVpnSni(String hostName) {
-        // 典型 VPN SNI 域名关键词
-        String[] vpnKeywords = {"vpn", "ssr", "shadowsocks", "lantern", "tor", "outline", "wireguard", "surfshark", "expressvpn"};
-        String lower = hostName.toLowerCase();
-        for (String keyword : vpnKeywords) {
-            if (lower.contains(keyword)) {
-                return true;
-            }
+    public static boolean isConnectSensitivePorts(UnifiedLog log) {
+        if (log == null || log.getServerPort() == null) return false;
+        return rules.getSensitivePorts().contains(log.getServerPort());
+    }
+
+    public static boolean isSensitiveContentAccess(UnifiedLog log) {
+        if (log == null || log.getSiteType() == null) return false;
+        return containsAnyKeyword(log.getSiteType(), rules.getSensitiveSiteTypes());
+    }
+
+    public static boolean isPotentialVpnLog(UnifiedLog log) {
+        return isInIocBlacklist(log)
+                || isDnsForeignFailed(log)
+                || isTlsSniVpn(log)
+                || isConnectSensitivePorts(log)
+                || isSensitiveContentAccess(log);
+    }
+
+    // ---------- 公共工具方法 ----------
+
+    private static boolean containsAnyKeyword(String content, Iterable<String> keywords) {
+        if (content == null || keywords == null) return false;
+        for (String keyword : keywords) {
+            if (content.contains(keyword)) return true;
         }
         return false;
     }
 
-    public static boolean isConnectSensitivePorts(UnifiedLog log) {
-        if (log.getServerPort() == null) return false;
-        int port = log.getServerPort();
-        return port == 1080 || port == 443 || port == 7890 || port == 8080 || port == 8888;
+    private static boolean contains(String container, String keyword) {
+        return notEmpty(container) && notEmpty(keyword) && container.contains(keyword);
     }
 
-    public static boolean isPotentialVpnLog(UnifiedLog log) {
-        return true;
-//        return isInIocBlacklist(log)
-//                || isDnsForeignFailed(log)
-//                || isTlsSniVpn(log)
-//                || isConnectSensitivePorts(log);
+    private static boolean notEmpty(String str) {
+        return str != null && !str.trim().isEmpty();
+    }
+
+    private static boolean stringEqualsIgnoreCase(String a, String b) {
+        return a != null && b != null && a.equalsIgnoreCase(b);
+    }
+
+    private static boolean typeEquals(UnifiedLog log, String expectedType) {
+        return log.getType() != null && log.getType().equals(expectedType);
+    }
+
+    private static String safeLower(String str) {
+        return str == null ? "" : str.toLowerCase();
     }
 }

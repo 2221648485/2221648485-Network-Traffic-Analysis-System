@@ -1,0 +1,33 @@
+sensitiveSiteTypes:
+  - 涉恐
+  - 暴恐
+  - 极端
+  - 敏感
+  - 疆独
+  - 台独
+  - 法轮功
+  - 颜色革命
+  - 煽动
+
+vpnSni:
+  - vpn
+  - ssr
+  - shadowsocks
+  - lantern
+  - tor
+  - outline
+  - wireguard
+  - surfshark
+  - expressvpn
+
+sensitivePorts:
+  - 1080
+  - 443
+  - 7890
+  - 8080
+  - 8888
+
+dnsFailedKeywords:
+  - failed
+  - error
+  - timeout

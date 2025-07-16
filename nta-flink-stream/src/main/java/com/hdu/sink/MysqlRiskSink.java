@@ -15,7 +15,7 @@ public class MysqlRiskSink extends RichSinkFunction<RiskResult> {
     private static final String JDBC_URL = "jdbc:mysql://localhost:3306/trafficanalysis";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "123456";
-    private static final String INSERT_SQL = "INSERT INTO risk_result (phone_number, risk_level, risk_score, window_start, window_end, msg, create_time) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    private static final String INSERT_SQL = "INSERT INTO risk_result (phone_number, risk_level, window_start, window_end, msg, create_time) VALUES (?, ?, ?, ?,  ?, ?)";
 
     private Connection conn;
     private PreparedStatement ps;
@@ -31,11 +31,10 @@ public class MysqlRiskSink extends RichSinkFunction<RiskResult> {
     public void invoke(RiskResult risk, Context context) throws Exception {
         ps.setString(1, risk.getPhoneNumber());
         ps.setString(2, risk.getRiskLevel());
-        ps.setDouble(3, risk.getRiskScore());
-        ps.setTimestamp(4, toTimestamp(risk.getWindowStart()));
-        ps.setTimestamp(5, toTimestamp(risk.getWindowEnd()));
-        ps.setString(6, risk.getMsg());
-        ps.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
+        ps.setTimestamp(3, toTimestamp(risk.getWindowStart()));
+        ps.setTimestamp(4, toTimestamp(risk.getWindowEnd()));
+        ps.setString(5, risk.getMsg());
+        ps.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
         ps.executeUpdate();
     }
 

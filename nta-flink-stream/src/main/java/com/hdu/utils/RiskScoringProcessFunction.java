@@ -17,57 +17,70 @@ public class RiskScoringProcessFunction extends ProcessWindowFunction<UnifiedLog
     public void process(String phoneNumber,
                         Context context,
                         Iterable<UnifiedLog> logs,
-                        Collector<RiskResult> out) throws Exception {
+                        Collector<RiskResult> out) {
 //        System.out.println("窗口触发：" + phoneNumber + "，窗口时间：" + context.window());
-        int totalScore = 0;
-        int matchCount = 0;
-        // Message保存日志信息
+        boolean hasHighRisk = false;
+        boolean hasMediumRisk = false;
+        boolean hasLowRisk = false;
         HashSet<String> messages = new HashSet<>();
+
         for (UnifiedLog log : logs) {
             if (VPNRuleUtils.isInIocBlacklist(log)) {
-                totalScore += 30;
-                messages.add("命中IOC黑名单：" + log.getServerIp());
+                hasHighRisk = true;
+                messages.add("命中IOC黑名单IP：" + log.getServerIp());
+                continue; // 高危直接判定，不再降级
             }
-            if (VPNRuleUtils.isDnsForeignFailed(log)) {
-                totalScore += 20;
-                messages.add("DNS连续失败，域名：" + log.getSiteUrl());
+
+            if (VPNRuleUtils.isSensitiveContentAccess(log)) {
+                hasHighRisk = true;
+                messages.add("内容：" + log.getSiteType());
+                if (log.getSiteName() != null && log.getSiteUrl() != null) {
+                    messages.add("访问网站为:" + log.getSiteName() + " 网址为:" + log.getSiteUrl());
+                }
+
+                continue;
             }
+
             if (VPNRuleUtils.isTlsSniVpn(log)) {
-                totalScore += 25;
-                messages.add("SNI字段疑似VPN：" + log.getTool());
-            }
-            if (VPNRuleUtils.isConnectSensitivePorts(log)) {
-                totalScore += 15;
+                hasMediumRisk = true;
+                messages.add("疑似VPN工具流量：" + log.getTool());
+            } else if (VPNRuleUtils.isDnsForeignFailed(log)) {
+                hasMediumRisk = true;
+                messages.add("DNS异常翻墙：" + log.getSiteUrl());
+            } else if (VPNRuleUtils.isConnectSensitivePorts(log)) {
+                hasMediumRisk = true;
                 messages.add("连接敏感端口：" + log.getServerPort());
+            } else {
+                hasLowRisk = true;
+                messages.add("境外访问行为：" + log.getSiteUrl());
             }
-            matchCount++;
         }
 
-        if (matchCount == 0) return;
-
-        double avgScore = totalScore / (double) matchCount;
-        double modelConfidence = AiModelClient.predictRiskConfidence(logs); // AI模型预测
-
-        String riskLevel = "low";
-        String redisKey = "vpn:risk:" + phoneNumber;
-        String redisCountKey = "vpn:count:" + phoneNumber;
+        // 结果输出逻辑
+        String riskLevel = "None";
+        if (hasHighRisk) {
+            riskLevel = "high";
+        } else if (hasMediumRisk) {
+            riskLevel = "medium";
+        } else if (hasLowRisk) {
+            riskLevel = "low";
+        }
 
         try (Jedis jedis = RedisClient.get()) {
-            long count = jedis.incr(redisCountKey);
-            jedis.expire(redisCountKey, 3600); // 设置过期时间1小时
+            String redisKey = "vpn:risk:" + phoneNumber;
+            String redisCountKey = "vpn:count:" + phoneNumber;
 
-            if (count >= 3 && avgScore > 50) riskLevel = "medium";
-            if (avgScore > 70 && modelConfidence > 0.8) riskLevel = "high";
-
-            jedis.setex(redisKey, 3600, riskLevel); // 记录风险等级，1小时过期
+            jedis.incr(redisCountKey);
+            jedis.expire(redisCountKey, 3600); // 1小时过期
+            jedis.setex(redisKey, 3600, riskLevel);
         }
+
         RiskResult result = new RiskResult();
         result.setPhoneNumber(phoneNumber);
-        result.setRiskScore(avgScore);
         result.setRiskLevel(riskLevel);
         result.setWindowStart(context.window().getStart());
         result.setWindowEnd(context.window().getEnd());
-        result.setMsg(String.valueOf(messages));
+        result.setMsg(String.join(" | ", messages));
 
         out.collect(result);
     }
