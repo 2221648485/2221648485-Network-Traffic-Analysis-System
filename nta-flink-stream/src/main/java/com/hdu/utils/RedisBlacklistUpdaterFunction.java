@@ -2,6 +2,7 @@ package com.hdu.utils;
 
 import com.hdu.entity.BlacklistStore;
 import com.hdu.entity.UnifiedLog;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.util.Collector;
@@ -14,6 +15,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class RedisBlacklistUpdaterFunction extends RichFlatMapFunction<UnifiedLog, UnifiedLog> {
 
     private transient Jedis jedis;
@@ -27,8 +29,8 @@ public class RedisBlacklistUpdaterFunction extends RichFlatMapFunction<UnifiedLo
     private final String ipBlacklistKey = "ioc:ip";
     private final String domainBlacklistKey = "ioc:domain";
 
-    // 拉取周期，单位秒
-    private final long refreshPeriodSeconds = 10000*300L;
+    // 拉取周期，单位秒 24*60*60L更新一次
+    private final long refreshPeriodSeconds = 24 * 60 * 60L;
 
     @Override
     public void open(Configuration parameters) throws Exception {
@@ -48,9 +50,9 @@ public class RedisBlacklistUpdaterFunction extends RichFlatMapFunction<UnifiedLo
             if (ipSet != null && !ipSet.isEmpty()) {
                 List<String> ipList = ipSet.stream().collect(Collectors.toList());
                 BlacklistStore.updateIps(ipList);
-                System.out.println("[RedisBlacklistUpdater] IP 黑名单更新，数量：" + ipList.size());
+                log.info("[RedisBlacklistUpdater] IP 黑名单更新，数量：{}", ipList.size());
             } else {
-                System.out.println("[RedisBlacklistUpdater] Redis IP 黑名单为空或获取失败");
+                log.error("[RedisBlacklistUpdater] Redis IP 黑名单为空或获取失败");
             }
 
             // 拉取域名黑名单
@@ -58,12 +60,12 @@ public class RedisBlacklistUpdaterFunction extends RichFlatMapFunction<UnifiedLo
             if (domainSet != null && !domainSet.isEmpty()) {
                 List<String> domainList = domainSet.stream().collect(Collectors.toList());
                 BlacklistStore.updateHostnames(domainList);
-                System.out.println("[RedisBlacklistUpdater] 域名黑名单更新，数量：" + domainList.size());
+                log.info("[RedisBlacklistUpdater] 域名黑名单更新，数量：{}", domainList.size());
             } else {
-                System.out.println("[RedisBlacklistUpdater] Redis 域名黑名单为空或获取失败");
+                log.error("[RedisBlacklistUpdater] Redis 域名黑名单为空或获取失败");
             }
         } catch (Exception e) {
-            System.err.println("[RedisBlacklistUpdater] 刷新黑名单失败：" + e.getMessage());
+            log.error("[RedisBlacklistUpdater] 刷新黑名单失败：{}" , e.getMessage());
         }
     }
 

@@ -4,8 +4,10 @@ import com.hdu.entity.*;
 import com.hdu.result.RiskResult;
 
 import com.hdu.sink.ExternalSystemSink;
+import com.hdu.sink.MysqlRiskSink;
 import com.hdu.utils.*;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -23,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Properties;
 
+@Slf4j
 public class LogAnalysisJob {
 
     public static void main(String[] args) throws Exception {
@@ -63,13 +66,13 @@ public class LogAnalysisJob {
                 // 2. 使用手机号作为用户标识聚合
                 .keyBy(UnifiedLog::getPhoneNumber)
                 // 3. 滚动 5 分钟窗口
-                .window(TumblingEventTimeWindows.of(Time.minutes(5)))
+                .window(TumblingEventTimeWindows.of(Time.minutes(1)))
                 // 4. 评分与模型置信度分析
                 .process(new RiskScoringProcessFunction()); // 此类中已接入 Redis 和模型评分
-
+        log.info("riskResults:{}", riskResults);
         // 5. 输出到控制台（或 Kafka / MySQL）
-        riskResults.print();
         riskResults.addSink(new ExternalSystemSink());
+        riskResults.addSink(new MysqlRiskSink());
 
         env.execute("VPN & Sensitive Access Detection Job");
     }

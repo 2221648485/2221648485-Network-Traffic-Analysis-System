@@ -9,6 +9,8 @@ import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import redis.clients.jedis.Jedis;
 
+import java.util.HashSet;
+
 public class RiskScoringProcessFunction extends ProcessWindowFunction<UnifiedLog, RiskResult, String, TimeWindow> {
 
     @Override
@@ -19,12 +21,25 @@ public class RiskScoringProcessFunction extends ProcessWindowFunction<UnifiedLog
 //        System.out.println("窗口触发：" + phoneNumber + "，窗口时间：" + context.window());
         int totalScore = 0;
         int matchCount = 0;
-
+        // Message保存日志信息
+        HashSet<String> messages = new HashSet<>();
         for (UnifiedLog log : logs) {
-            if (VPNRuleUtils.isInIocBlacklist(log)) totalScore += 30;
-            if (VPNRuleUtils.isDnsForeignFailed(log)) totalScore += 20;
-            if (VPNRuleUtils.isTlsSniVpn(log)) totalScore += 25;
-            if (VPNRuleUtils.isConnectSensitivePorts(log)) totalScore += 15;
+            if (VPNRuleUtils.isInIocBlacklist(log)) {
+                totalScore += 30;
+                messages.add("命中IOC黑名单：" + log.getServerIp());
+            }
+            if (VPNRuleUtils.isDnsForeignFailed(log)) {
+                totalScore += 20;
+                messages.add("DNS连续失败，域名：" + log.getSiteUrl());
+            }
+            if (VPNRuleUtils.isTlsSniVpn(log)) {
+                totalScore += 25;
+                messages.add("SNI字段疑似VPN：" + log.getTool());
+            }
+            if (VPNRuleUtils.isConnectSensitivePorts(log)) {
+                totalScore += 15;
+                messages.add("连接敏感端口：" + log.getServerPort());
+            }
             matchCount++;
         }
 
@@ -46,13 +61,13 @@ public class RiskScoringProcessFunction extends ProcessWindowFunction<UnifiedLog
 
             jedis.setex(redisKey, 3600, riskLevel); // 记录风险等级，1小时过期
         }
-
         RiskResult result = new RiskResult();
         result.setPhoneNumber(phoneNumber);
         result.setRiskScore(avgScore);
         result.setRiskLevel(riskLevel);
         result.setWindowStart(context.window().getStart());
         result.setWindowEnd(context.window().getEnd());
+        result.setMsg(String.valueOf(messages));
 
         out.collect(result);
     }
