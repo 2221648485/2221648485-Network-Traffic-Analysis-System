@@ -20,6 +20,7 @@ public class RiskResult {
     private LocalDateTime windowEnd; // 窗口结束时间
     private String msg; // 信息
     private LocalDateTime createTime; // 创建时间
+    private String status; // 状态
 
 
     public void setWindowStart(Long time) {
