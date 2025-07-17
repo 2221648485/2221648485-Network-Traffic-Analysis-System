@@ -81,7 +81,7 @@ public class RiskScoringProcessFunction extends ProcessWindowFunction<UnifiedLog
         result.setWindowStart(context.window().getStart());
         result.setWindowEnd(context.window().getEnd());
         result.setMsg(String.join(" | ", messages));
-
+        result.setStatus("NEW");
         out.collect(result);
     }
 }

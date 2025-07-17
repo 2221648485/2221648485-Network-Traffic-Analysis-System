@@ -25,7 +25,7 @@ public class RiskAlertTask {
         LocalDateTime endTime = LocalDateTime.now();
         LocalDateTime startTime = endTime.minusMinutes(6);
 
-        List<RiskResult> riskResults = riskResultMapper.selectRecentRiskResults(startTime, endTime);
+        List<RiskResult> riskResults = riskResultMapper.selectRecentNEWRiskResults(startTime, endTime);
 
         for (RiskResult r : riskResults) {
             try {
@@ -33,6 +33,8 @@ public class RiskAlertTask {
                 userActionService.triggerPaAction(r.getPhoneNumber(), r.getRiskLevel()); // 调用 PA 接口 (高风险下线)
                 userActionService.applyAaaPolicy(r.getPhoneNumber(), r.getRiskLevel()); // 调用 AAA 接口 (删除mac地址)
                 userActionService.moveUserToRiskGroup(r.getPhoneNumber(), r.getRiskLevel()); // 调用 PA 接口 (转移用户组)
+                r.setStatus("DONE");
+                riskResultMapper.update(r); // 更新
                 // 标记或其他处理逻辑（如状态字段），如果有设计的话
             } catch (Exception e) {
                 log.error("处理风险用户失败: {}", r.getPhoneNumber(), e);

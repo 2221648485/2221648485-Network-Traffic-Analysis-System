@@ -10,5 +10,7 @@ import java.util.List;
 
 @Mapper
 public interface RiskResultMapper {
-    List<RiskResult> selectRecentRiskResults(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
+    List<RiskResult> selectRecentNEWRiskResults(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
+
+    void update(RiskResult r);
 }

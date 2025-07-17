@@ -35,7 +35,7 @@ public class MysqlRiskSink extends RichSinkFunction<RiskResult> {
         ps.setTimestamp(4, toTimestamp(risk.getWindowEnd()));
         ps.setString(5, risk.getMsg());
         ps.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
-        ps.setString(7, "NEW");
+        ps.setString(7, risk.getStatus());
         ps.executeUpdate();
     }
 

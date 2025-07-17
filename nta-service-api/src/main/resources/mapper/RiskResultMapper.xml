@@ -2,8 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.hdu.mapper.RiskResultMapper">
+    <update id="update">
+        UPDATE risk_result
+        <set>
+            <if test="phoneNumber != null">phone_number = #{phoneNumber},</if>
+            <if test="riskLevel != null">risk_level = #{riskLevel},</if>
+            <if test="riskScore != null">risk_score = #{riskScore},</if>
+            <if test="windowStart != null">window_start = #{windowStart},</if>
+            <if test="windowEnd != null">window_end = #{windowEnd},</if>
+            <if test="msg != null">msg = #{msg},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
 
-    <select id="selectRecentRiskResults" resultType="com.hdu.result.RiskResult">
+    <select id="selectRecentNEWRiskResults" resultType="com.hdu.result.RiskResult">
         SELECT *
         FROM risk_result
         WHERE risk_level IN ('high', 'medium')
