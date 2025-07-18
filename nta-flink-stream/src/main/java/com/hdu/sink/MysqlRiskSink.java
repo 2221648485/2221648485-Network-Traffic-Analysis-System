@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 public class MysqlRiskSink extends RichSinkFunction<RiskResult> {
     // 数据库连接配置（抽取为常量）
     private static final String JDBC_URL = "jdbc:mysql://localhost:3306/trafficanalysis";
+//    private static final String JDBC_URL = "jdbc:mysql://host.docker.internal:3306/trafficanalysis?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "123456";
     private static final String INSERT_SQL = "INSERT INTO risk_result (phone_number, risk_level, window_start, window_end, msg, create_time, status) VALUES (?, ?, ?, ?, ?, ?, ?)";

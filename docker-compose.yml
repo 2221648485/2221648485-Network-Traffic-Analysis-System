@@ -28,3 +28,26 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
+
+  jobmanager:
+    image: flink:1.18
+    container_name: jobmanager
+    restart: unless-stopped
+    ports:
+      - "8081:8081"  # Flink Web UI
+    command: jobmanager
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=jobmanager
+    depends_on:
+      - kafka
+      - redis
+
+  taskmanager:
+    image: flink:1.18
+    container_name: taskmanager
+    restart: unless-stopped
+    command: taskmanager
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=jobmanager
+    depends_on:
+      - jobmanager
