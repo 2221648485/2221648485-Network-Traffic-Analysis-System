@@ -9,6 +9,7 @@ import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import redis.clients.jedis.Jedis;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 
 public class RiskScoringProcessFunction extends ProcessWindowFunction<UnifiedLog, RiskResult, String, TimeWindow> {
@@ -82,6 +83,7 @@ public class RiskScoringProcessFunction extends ProcessWindowFunction<UnifiedLog
         result.setWindowEnd(context.window().getEnd());
         result.setMsg(String.join(" | ", messages));
         result.setStatus("NEW");
+        System.out.println(result);
         out.collect(result);
     }
 }

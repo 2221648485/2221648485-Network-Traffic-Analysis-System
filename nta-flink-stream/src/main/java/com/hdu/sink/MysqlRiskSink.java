@@ -12,8 +12,9 @@ import java.time.LocalDateTime;
 
 public class MysqlRiskSink extends RichSinkFunction<RiskResult> {
     // 数据库连接配置（抽取为常量）
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/trafficanalysis";
-//    private static final String JDBC_URL = "jdbc:mysql://host.docker.internal:3306/trafficanalysis?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+//    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/Network-Traffic-Analysis-System";
+    private static final String JDBC_URL = "jdbc:mysql://mysql:3306/Network_Traffic_Analysis_System?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai";
+
     private static final String USERNAME = "root";
     private static final String PASSWORD = "123456";
     private static final String INSERT_SQL = "INSERT INTO risk_result (phone_number, risk_level, window_start, window_end, msg, create_time, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -23,6 +24,7 @@ public class MysqlRiskSink extends RichSinkFunction<RiskResult> {
 
     @Override
     public void open(Configuration parameters) throws Exception {
+        Class.forName("com.mysql.cj.jdbc.Driver"); // 显式加载驱动
         super.open(parameters);
         conn = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
         ps = conn.prepareStatement(INSERT_SQL);
@@ -34,6 +36,7 @@ public class MysqlRiskSink extends RichSinkFunction<RiskResult> {
         ps.setString(2, risk.getRiskLevel());
         ps.setTimestamp(3, toTimestamp(risk.getWindowStart()));
         ps.setTimestamp(4, toTimestamp(risk.getWindowEnd()));
+        System.out.println(risk.getMsg());
         ps.setString(5, risk.getMsg());
         ps.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
         ps.setString(7, risk.getStatus());

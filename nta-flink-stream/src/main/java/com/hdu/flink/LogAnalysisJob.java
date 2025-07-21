@@ -35,7 +35,8 @@ public class LogAnalysisJob {
 
         // 1. Kafka 配置
         Properties props = new Properties();
-        props.setProperty("bootstrap.servers", "localhost:9092");
+//        props.setProperty("bootstrap.servers", "localhost:9092");
+        props.setProperty("bootstrap.servers", "kafka:9092");
         props.setProperty("group.id", "vpn-analysis-group");
 
         FlinkKafkaConsumer<String> kafkaSource = new FlinkKafkaConsumer<>(

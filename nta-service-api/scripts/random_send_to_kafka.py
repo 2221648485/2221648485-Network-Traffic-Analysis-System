@@ -133,7 +133,7 @@ if __name__ == "__main__":
             message = generators[log_type]()
             print(f"[{log_type}] {message}")
             producer.send(KAFKA_TOPIC, message)
-            # time.sleep(0.01)
+            time.sleep(0.5)
     except KeyboardInterrupt:
         print("已终止发送。")
     finally:
