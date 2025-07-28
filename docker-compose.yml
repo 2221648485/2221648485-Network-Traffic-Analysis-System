@@ -23,8 +23,8 @@ services:
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://10.249.46.48:9092  # 👈 你的宿主机 IP
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1  # ✅ 否则 Flink 的 offset topic 也会爆错
-      KAFKA_CREATE_TOPICS: "test:1:1"            # ✅ 自动建 test topic（1分区1副本）
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1  #  否则 Flink 的 offset topic 也会爆错
+      KAFKA_CREATE_TOPICS: "test:1:1"            #  自动建 test topic（1分区1副本）
     depends_on:
       - zookeeper
     networks:

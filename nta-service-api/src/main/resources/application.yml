@@ -36,12 +36,12 @@ pagehelper:
 pa:
   api:
     base-url: http://pa-device-ip
-    access-token: your_pa_token
+    access-token:
 
 aaa:
   api:
     base-url: http://aaa-device-ip
-    access-token: your_aaa_token
+    access-token:
 
 
     redis:
@@ -49,3 +49,13 @@ aaa:
       #auth: 123456
       database: 0
       port: 6379
+
+  spring:
+    kafka:
+      consumer:
+        bootstrap-servers: 10.249.46.48:9092
+        group-id: risk-result-group
+        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+        properties:
+          spring.json.trusted.packages: com.hdu.result

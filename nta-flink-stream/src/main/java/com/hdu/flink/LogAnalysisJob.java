@@ -5,11 +5,13 @@ import com.hdu.result.RiskResult;
 
 import com.hdu.sink.ExternalSystemSink;
 import com.hdu.sink.MysqlRiskSink;
+import com.hdu.sink.RiskResultKafkaSink;
 import com.hdu.utils.*;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.connector.kafka.sink.KafkaSink;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
@@ -17,6 +19,7 @@ import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindo
 import org.apache.flink.streaming.api.windowing.time.Time;
 
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -56,7 +59,7 @@ public class LogAnalysisJob {
                 .assignTimestampsAndWatermarks(WatermarkStrategy
                         .<UnifiedLog>forBoundedOutOfOrderness(Duration.ofSeconds(10))
                         .withTimestampAssigner((log, ts) -> Timestamp.valueOf(log.getTimeString()).getTime())
-                        .withIdleness(Duration.ofSeconds(30)) // ✅ 必加，保证 watermark 推进
+                        .withIdleness(Duration.ofSeconds(30)) // 必加，保证 watermark 推进
                 );
         // 4. 风险检测与评分
         DataStream<RiskResult> riskResults = unifiedWithWatermark
@@ -74,6 +77,10 @@ public class LogAnalysisJob {
         // 5. 输出到控制台（或 Kafka / MySQL）
         riskResults.addSink(new ExternalSystemSink());
         riskResults.addSink(new MysqlRiskSink());
+
+        // 发送到 Kafka 封禁队列
+        KafkaSink<RiskResult> kafkaSink = RiskResultKafkaSink.build("kafka:9092", "ban-topic");
+        riskResults.sinkTo(kafkaSink);
 
         env.execute("VPN & Sensitive Access Detection Job");
     }

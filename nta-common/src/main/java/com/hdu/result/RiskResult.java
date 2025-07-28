@@ -13,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RiskResult {
+    private Long id;
     private String phoneNumber; // 手机号码
     private String riskLevel; // 风险等级
     private double riskScore; // 风险得分
@@ -23,11 +24,11 @@ public class RiskResult {
     private String status; // 状态
 
 
-    public void setWindowStart(Long time) {
+    public void setWindowStartTime(Long time) {
         this.windowStart = parseTime(time);
     }
 
-    public void setWindowEnd(Long time) {
+    public void setWindowEndTime(Long time) {
         this.windowEnd = parseTime(time);
     }
 

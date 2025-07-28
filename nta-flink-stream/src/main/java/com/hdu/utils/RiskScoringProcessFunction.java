@@ -79,8 +79,8 @@ public class RiskScoringProcessFunction extends ProcessWindowFunction<UnifiedLog
         RiskResult result = new RiskResult();
         result.setPhoneNumber(phoneNumber);
         result.setRiskLevel(riskLevel);
-        result.setWindowStart(context.window().getStart());
-        result.setWindowEnd(context.window().getEnd());
+        result.setWindowStartTime(context.window().getStart());
+        result.setWindowEndTime(context.window().getEnd());
         result.setMsg(String.join(" | ", messages));
         result.setStatus("NEW");
         System.out.println(result);

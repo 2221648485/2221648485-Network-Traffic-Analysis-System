@@ -35,7 +35,6 @@ public class RiskAlertTask {
                 userActionService.moveUserToRiskGroup(r.getPhoneNumber(), r.getRiskLevel()); // 调用 PA 接口 (转移用户组)
                 r.setStatus("DONE");
                 riskResultMapper.update(r); // 更新
-                // 标记或其他处理逻辑（如状态字段），如果有设计的话
             } catch (Exception e) {
                 log.error("处理风险用户失败: {}", r.getPhoneNumber(), e);
             }
