@@ -90,10 +90,24 @@ services:
     networks:
       - flink-net
 
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver
+    restart: unless-stopped
+    environment:
+      SA_PASSWORD: "Hzsun310012"  # 注意：必须满足 MSSQL 的密码强度要求
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"  # 宿主机可通过 1433 访问 SQL Server
+    volumes:
+      - sqlserver_data:/var/opt/mssql  # 数据持久化
+    networks:
+      - flink-net
+
 # 持久化 MySQL 数据
 volumes:
   mysql_data:
-
+  sqlserver_data:
 # 所有服务共享的自定义网络，容器间可以通过名字互相访问
 networks:
   flink-net:

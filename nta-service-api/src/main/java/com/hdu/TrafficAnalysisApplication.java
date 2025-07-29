@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @Slf4j
 @EnableScheduling
-@MapperScan("com.hdu.mapper")
+@MapperScan({"com.hdu.mapper.mysql", "com.hdu.mapper.sqlserver"})
 public class TrafficAnalysisApplication {
 
     public static void main(String[] args) {

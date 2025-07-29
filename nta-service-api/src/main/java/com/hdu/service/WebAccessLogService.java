@@ -4,7 +4,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.hdu.DTO.WebAccessLogDTO;
 import com.hdu.entity.WebAccessLog;
-import com.hdu.mapper.WebAccessLogMapper;
+import com.hdu.mapper.mysql.WebAccessLogMapper;
 import com.hdu.result.PageResult;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.hdu.mapper;
+package com.hdu.mapper.mysql;
 
 import com.github.pagehelper.Page;
 import com.hdu.DTO.DeclassifyLogDTO;

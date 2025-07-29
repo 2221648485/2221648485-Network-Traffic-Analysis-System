@@ -3,10 +3,17 @@ spring:
   application:
     name: hdu-traffic-analysis
   datasource:
-    url: jdbc:mysql://localhost:3306/Network_Traffic_Analysis_System
-    username: root
-    password: 123456
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    mysql:
+      url: jdbc:mysql://localhost:3306/Network_Traffic_Analysis_System
+      username: root
+      password: 123456
+      driver-class-name: com.mysql.cj.jdbc.Driver
+
+    sqlserver:
+      url: jdbc:sqlserver://192.168.100.202:1433;databaseName=easytong_plus
+      username: sa
+      password: Hzsun310012
+      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   # 时间格式化
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss

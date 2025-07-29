@@ -3,7 +3,7 @@ package com.hdu.service;
 import com.hdu.DTO.*;
 import com.hdu.VO.RiskAnalysisVO;
 import com.hdu.entity.*;
-import com.hdu.mapper.*;
+import com.hdu.mapper.mysql.*;
 import com.hdu.rule.RiskRuleEngine;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

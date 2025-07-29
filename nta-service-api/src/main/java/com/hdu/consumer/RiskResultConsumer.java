@@ -1,6 +1,6 @@
 package com.hdu.consumer;
 
-import com.hdu.mapper.RiskResultMapper;
+import com.hdu.mapper.mysql.RiskResultMapper;
 import com.hdu.result.RiskResult;
 import com.hdu.service.UserActionService;
 import lombok.RequiredArgsConstructor;

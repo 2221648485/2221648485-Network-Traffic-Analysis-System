@@ -1,4 +1,4 @@
-package com.hdu.mapper;
+package com.hdu.mapper.mysql;
 
 import com.hdu.result.RiskResult;
 import org.apache.ibatis.annotations.Param;
