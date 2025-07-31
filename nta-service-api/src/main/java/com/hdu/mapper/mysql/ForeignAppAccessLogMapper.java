@@ -1,7 +1,7 @@
 package com.hdu.mapper.mysql;
 
 import com.github.pagehelper.Page;
-import com.hdu.DTO.ForeignAppAccessLogDTO;
+import com.hdu.dto.ForeignAppAccessLogDTO;
 import com.hdu.entity.ForeignAppAccessLog;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;

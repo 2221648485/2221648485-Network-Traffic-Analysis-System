@@ -2,7 +2,7 @@ package com.hdu.service;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.hdu.DTO.TunnelOfflineLogDTO;
+import com.hdu.dto.TunnelOfflineLogDTO;
 import com.hdu.entity.TunnelOfflineLog;
 import com.hdu.mapper.mysql.TunnelOfflineLogMapper;
 import com.hdu.result.PageResult;

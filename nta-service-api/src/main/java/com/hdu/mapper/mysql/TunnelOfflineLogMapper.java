@@ -1,7 +1,7 @@
 package com.hdu.mapper.mysql;
 
 import com.github.pagehelper.Page;
-import com.hdu.DTO.TunnelOfflineLogDTO;
+import com.hdu.dto.TunnelOfflineLogDTO;
 import com.hdu.entity.TunnelOfflineLog;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;

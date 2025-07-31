@@ -1,4 +1,4 @@
-package com.hdu.DTO;
+package com.hdu.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,19 +10,22 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class WebAccessLogDTO {
+public class DeclassifyLogDTO {
     private Integer page;
     private Integer pageSize;
     private Integer uid;
+    private String flowId;
     private String phoneNumber;
     private LocalDate begin;
     private LocalDateTime beginTime;
-    private LocalDateTime endTime;
     private LocalDate end;
+    private LocalDateTime endTime;
 
-    public WebAccessLogDTO(String phoneNumber, LocalDateTime begin, LocalDateTime end) {
+    public DeclassifyLogDTO(String phoneNumber, LocalDateTime beginTime, LocalDateTime endTime) {
         this.phoneNumber = phoneNumber;
-        this.beginTime = begin;
-        this.endTime = end;
+        this.beginTime = beginTime;
+        this.endTime = endTime;
     }
+
+
 }

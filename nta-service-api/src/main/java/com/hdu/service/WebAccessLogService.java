@@ -2,7 +2,7 @@ package com.hdu.service;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.hdu.DTO.WebAccessLogDTO;
+import com.hdu.dto.WebAccessLogDTO;
 import com.hdu.entity.WebAccessLog;
 import com.hdu.mapper.mysql.WebAccessLogMapper;
 import com.hdu.result.PageResult;

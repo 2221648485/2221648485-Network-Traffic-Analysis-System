@@ -1,7 +1,6 @@
 package com.hdu.contorller;
 
-import com.hdu.DTO.TunnelAccessLogDTO;
-import com.hdu.DTO.WebAccessLogDTO;
+import com.hdu.dto.TunnelAccessLogDTO;
 import com.hdu.result.PageResult;
 import com.hdu.result.Result;
 import com.hdu.service.TunnelAccessLogService;

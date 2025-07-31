@@ -1,7 +1,7 @@
 package com.hdu.mapper.mysql;
 
 import com.github.pagehelper.Page;
-import com.hdu.DTO.DeclassifyLogDTO;
+import com.hdu.dto.DeclassifyLogDTO;
 import com.hdu.entity.DeclassifyLog;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;

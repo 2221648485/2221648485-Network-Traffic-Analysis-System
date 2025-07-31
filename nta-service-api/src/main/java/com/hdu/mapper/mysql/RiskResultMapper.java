@@ -12,4 +12,6 @@ public interface RiskResultMapper {
     List<RiskResult> selectRecentNEWRiskResults(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
     void update(RiskResult r);
+
+    int getByLevel(@Param("level") String level, @Param("begin") LocalDateTime begin,@Param("end") LocalDateTime end);
 }

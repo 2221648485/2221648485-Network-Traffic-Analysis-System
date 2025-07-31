@@ -1,4 +1,4 @@
-package com.hdu.DTO;
+package com.hdu.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -6,21 +6,21 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ForeignAppAccessLogDTO {
+public class TunnelAccessLogDTO {
     private Integer page;
     private Integer pageSize;
     private Integer uid;
+    private String flowId;
     private String phoneNumber;
-    private LocalDateTime beginTime;
     private LocalDate begin;
-    private LocalDateTime endTime;
+    private LocalDateTime beginTime;
     private LocalDate end;
+    private LocalDateTime endTime;
 
-    public ForeignAppAccessLogDTO(String phoneNumber, LocalDateTime beginTime, LocalDateTime endTime) {
+    public TunnelAccessLogDTO(String phoneNumber, LocalDateTime beginTime, LocalDateTime endTime) {
         this.phoneNumber = phoneNumber;
         this.beginTime = beginTime;
         this.endTime = endTime;

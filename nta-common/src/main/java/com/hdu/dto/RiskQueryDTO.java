@@ -1,4 +1,4 @@
-package com.hdu.DTO;
+package com.hdu.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

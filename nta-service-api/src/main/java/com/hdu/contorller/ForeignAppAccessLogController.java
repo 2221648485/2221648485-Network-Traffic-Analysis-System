@@ -1,6 +1,6 @@
 package com.hdu.contorller;
 
-import com.hdu.DTO.ForeignAppAccessLogDTO;
+import com.hdu.dto.ForeignAppAccessLogDTO;
 import com.hdu.result.PageResult;
 import com.hdu.result.Result;
 import com.hdu.service.ForeignAppAccessLogService;

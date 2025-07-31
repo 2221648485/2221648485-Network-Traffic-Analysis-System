@@ -2,7 +2,6 @@ package com.hdu.utils;
 
 import com.hdu.entity.UnifiedLog;
 import com.hdu.result.RiskResult;
-import com.hdu.client.AiModelClient;
 import com.hdu.client.RedisClient;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
@@ -83,7 +82,6 @@ public class RiskScoringProcessFunction extends ProcessWindowFunction<UnifiedLog
         result.setWindowEndTime(context.window().getEnd());
         result.setMsg(String.join(" | ", messages));
         result.setStatus("NEW");
-        System.out.println(result);
         out.collect(result);
     }
 }

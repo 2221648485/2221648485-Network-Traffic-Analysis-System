@@ -1,6 +1,6 @@
 package com.hdu.contorller;
 
-import com.hdu.DTO.DeclassifyLogDTO;
+import com.hdu.dto.DeclassifyLogDTO;
 import com.hdu.result.PageResult;
 import com.hdu.result.Result;
 import com.hdu.service.DeclassifyLogService;

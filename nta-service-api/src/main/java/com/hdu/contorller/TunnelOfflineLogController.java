@@ -1,8 +1,6 @@
 package com.hdu.contorller;
 
-import com.hdu.DTO.TunnelAccessLogDTO;
-import com.hdu.DTO.TunnelOfflineLogDTO;
-import com.hdu.DTO.WebAccessLogDTO;
+import com.hdu.dto.TunnelOfflineLogDTO;
 import com.hdu.result.PageResult;
 import com.hdu.result.Result;
 import com.hdu.service.TunnelOfflineLogService;
@@ -11,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

@@ -1,4 +1,4 @@
-package com.hdu.DTO;
+package com.hdu.dto;
 
 import com.hdu.entity.*;
 import lombok.AllArgsConstructor;

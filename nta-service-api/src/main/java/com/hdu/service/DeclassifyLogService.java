@@ -2,7 +2,7 @@ package com.hdu.service;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.hdu.DTO.DeclassifyLogDTO;
+import com.hdu.dto.DeclassifyLogDTO;
 import com.hdu.entity.DeclassifyLog;
 import com.hdu.mapper.mysql.DeclassifyLogMapper;
 import com.hdu.result.PageResult;

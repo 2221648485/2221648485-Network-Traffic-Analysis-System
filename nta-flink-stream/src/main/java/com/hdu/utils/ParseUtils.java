@@ -50,6 +50,12 @@ public class ParseUtils {
                     unifiedDeclassifyLog.setTimeString(timeString); // 设置到新增的 timeString 字段
                     return unifiedDeclassifyLog;
 
+//                case "tw_act_off":
+//                    TunnelOfflineLog twLogOff = TunnelOfflineLog.fromString(remaining);
+//                    UnifiedLog unifiedTwLogOff = ABMapper.INSTANCE.aToB(twLogOff);
+//                    unifiedTwLogOff.setType(type);
+//                    unifiedTwLogOff.setTimeString(timeString); // 设置到新增的 timeString 字段
+//                    return unifiedTwLogOff;
                 default:
                     return null;
             }

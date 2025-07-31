@@ -79,14 +79,17 @@ services:
   # Flink TaskManager
   taskmanager:
     image: flink:1.18
-    container_name: taskmanager
+#    container_name: taskmanager
     restart: unless-stopped
     command: taskmanager  # 启动为 TaskManager 模式
     environment:
       - JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8
       - JOB_MANAGER_RPC_ADDRESS=jobmanager  # 告诉它怎么连接 JobManager
+      - TASK_MANAGER_NUMBER_OF_TASK_SLOTS=4
     depends_on:
       - jobmanager
+    deploy:
+      replicas: 2  # 从1个TaskManager增加到2个
     networks:
       - flink-net
 

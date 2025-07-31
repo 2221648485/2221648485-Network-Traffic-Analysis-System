@@ -1,6 +1,6 @@
 package com.hdu.contorller;
 
-import com.hdu.DTO.WebAccessLogDTO;
+import com.hdu.dto.WebAccessLogDTO;
 import com.hdu.result.PageResult;
 import com.hdu.service.WebAccessLogService;
 import com.hdu.result.Result;

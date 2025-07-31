@@ -2,7 +2,7 @@ package com.hdu.service;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.hdu.DTO.ForeignAppAccessLogDTO;
+import com.hdu.dto.ForeignAppAccessLogDTO;
 import com.hdu.entity.ForeignAppAccessLog;
 import com.hdu.mapper.mysql.ForeignAppAccessLogMapper;
 import com.hdu.result.PageResult;
