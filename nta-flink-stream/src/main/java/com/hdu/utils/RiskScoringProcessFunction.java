@@ -22,8 +22,11 @@ public class RiskScoringProcessFunction extends ProcessWindowFunction<UnifiedLog
         boolean hasMediumRisk = false;
         boolean hasLowRisk = false;
         HashSet<String> messages = new HashSet<>();
-
+        String phoneNumber = "";
         for (UnifiedLog log : logs) {
+            if (phoneNumber == "" || log.getPhoneNumber() != "") {
+                phoneNumber = log.getPhoneNumber();
+            }
             if (VPNRuleUtils.isInIocBlacklist(log)) {
                 hasHighRisk = true;
                 messages.add("命中IOC黑名单IP：" + log.getServerIp());
@@ -75,6 +78,7 @@ public class RiskScoringProcessFunction extends ProcessWindowFunction<UnifiedLog
 //        }
 
         RiskResult result = new RiskResult();
+        result.setPhoneNumber(phoneNumber);
         result.setRiskLevel(riskLevel);
         result.setWindowStartTime(context.window().getStart());
         result.setWindowEndTime(context.window().getEnd());

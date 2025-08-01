@@ -1,5 +1,6 @@
 package com.hdu.utils;
 
+import com.hdu.config.RedisConfig;
 import com.hdu.entity.BlacklistStore;
 import com.hdu.entity.UnifiedLog;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +22,11 @@ public class RedisBlacklistUpdaterFunction extends RichFlatMapFunction<UnifiedLo
     private transient Jedis jedis;
     private transient ScheduledExecutorService scheduler;
 
+    private static final RedisConfig redisConfig = ConfigUtils.getRedisConfig();
+
     // Redis 配置
-    private final String redisHost = "redis";
-    private final int redisPort = 6379;
+    private final String redisHost = redisConfig.getHost();
+    private final int redisPort = redisConfig.getPort();
 
     // 黑名单 Redis Key
     private final String ipBlacklistKey = "ioc:ip";

@@ -9,4 +9,5 @@ redis:
 
 kafka:
   bootstrapServers: kafka:9092
-  groupId: flink-group
+  groupId: vpn-analysis-group
+

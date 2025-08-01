@@ -7,8 +7,8 @@ from faker import Faker
 
 fake = Faker('zh_CN')
 
-KAFKA_BROKER = 'localhost:9092'
-KAFKA_TOPIC = 'test'
+KAFKA_BROKER = '10.249.46.48:9092'
+KAFKA_TOPIC = 'lingyu-log'
 
 producer = KafkaProducer(
     bootstrap_servers=KAFKA_BROKER,
@@ -25,7 +25,7 @@ def generate_web_act():
         datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         str(random.randint(13000000000, 18000000000)),
         f"4600{random.randint(10**11, 10**12 - 1)}",
-        "", "",  # IMEI, ADSL账号
+        "", "252050314",  # IMEI, ADSL账号
         random.choice(["西藏流亡国会", "世界维吾尔代表大会", "TG频道", "YouTube", "Twitter", "大纪元", "新唐人"]),
         random.choice(["tibetanparliament.org", "uyghurcongress.org", "t.me/vpninfo", "youtube.com", "twitter.com", "epochtimes.com", "ntdtv.com"]),
         random.choice(["涉藏", "涉恐", "涉证", "邪教", "非法集会", "反动"]),
@@ -51,7 +51,7 @@ def generate_tw_act():
         f"{int(time.time() * 1000)}_{random.randint(100, 999)}",
         str(random.randint(13000000000, 18000000000)),
         f"4600{random.randint(10**11, 10**12 - 1)}",
-        "", "",
+        "", "252050314",
         fake.ipv4_private(),
         fake.ipv4_public(),
         random.choice(["中国 上海", "中国 杭州", "中国 广州"]),
@@ -81,7 +81,7 @@ def generate_app_act():
         datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         str(random.randint(13000000000, 18000000000)),
         f"4600{random.randint(10**11, 10**12 - 1)}",
-        "", "",
+        "", "252050314",
         fake.ipv4_private(),
         fake.ipv4_public(),
         random.choice(["Twitter", "YouTube", "Telegram", "Instagram", "Facebook", "TikTok", "WhatsApp"])
@@ -95,7 +95,7 @@ def generate_declassify_act():
         f"{int(time.time() * 1000)}_{random.randint(100, 999)}",
         str(random.randint(13000000000, 18000000000)),
         f"4600{random.randint(10**11, 10**12 - 1)}",
-        "", "",
+        "", "252050314",
         fake.ipv4_private(),
         str(random.randint(1024, 65535)),
         fake.ipv4_public(),
@@ -139,6 +139,7 @@ def send_logs(batch_size=1000, target_per_second=100000):
         while True:
             batch = generate_batch_logs(batch_size)
             for msg in batch:
+                print(msg)
                 producer.send(KAFKA_TOPIC, msg)
             # 不等待 flush，会自动批处理提升性能
             # producer.flush()  # 可选：降低延迟但增加负载
@@ -163,4 +164,4 @@ def send_logs(batch_size=1000, target_per_second=100000):
 
 
 if __name__ == "__main__":
-    send_logs(batch_size=1000, target_per_second=10000)
+    send_logs(batch_size=1, target_per_second=1)

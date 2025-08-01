@@ -3,10 +3,9 @@ package com.hdu.flink;
 import com.hdu.config.KafkaConfig;
 import com.hdu.entity.*;
 import com.hdu.result.RiskResult;
-import com.hdu.sink.ExternalSystemSink;
-import com.hdu.sink.MysqlRiskSink;
-import com.hdu.sink.RiskResultKafkaSink;
+import com.hdu.sink.*;
 import com.hdu.utils.*;
+import com.hdu.vo.UserPortrait;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
@@ -29,6 +28,7 @@ import java.util.Properties;
 public class LogAnalysisJob {
 
     private static final KafkaConfig kafkaConfig = ConfigUtils.getKafkaConfig();
+
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
@@ -56,7 +56,7 @@ public class LogAnalysisJob {
                 .addSource(kafkaSource)
                 .map(ParseUtils::parseToUnifiedLog)
                 .filter(Objects::nonNull);
-        unifiedStream.print();
+//        unifiedStream.addSink(new ExcelSink("F:\\flink\\unified_log.xlsx"));
         // 3. 时间戳与水位线
         DataStream<UnifiedLog> unifiedWithWatermark = unifiedStream
                 .assignTimestampsAndWatermarks(WatermarkStrategy
@@ -67,7 +67,9 @@ public class LogAnalysisJob {
         // 4. 风险检测
         DataStream<RiskResult> riskResults = unifiedWithWatermark
                 // 先让 RedisBlacklistUpdaterFunction 周期刷新黑名单缓存，并透传数据
-//                .flatMap(new RedisBlacklistUpdaterFunction())
+                .flatMap(new RedisBlacklistUpdaterFunction())
+                 // 过滤掉没有学号的信息
+                .filter(log -> log.getAdslAccount() != null)
                 // 1. 识别所有可能的翻墙行为日志
                 .filter(VPNRuleUtils::isPotentialVpnLog)
                 // 2. 使用adsl账号作为用户标识聚合
@@ -77,8 +79,16 @@ public class LogAnalysisJob {
                 // 4. 评分与模型置信度分析
                 .process(new RiskScoringProcessFunction()); // 此类中已接入 Redis 和模型评分
 
+        // 5. 用户画像
+        DataStream<UserPortrait> userPortraits = unifiedWithWatermark
+                .filter(log -> log.getFlowId() != null)
+                .keyBy(UnifiedLog::getFlowId)
+                .window(TumblingEventTimeWindows.of(Time.minutes(1)))
+                .process(new UserPortraitWindowFunction());
+
+        userPortraits.addSink(new MysqlPortraitSink());
         log.info("riskResults:{}", riskResults);
-        // 5. 输出到控制台（或 Kafka / MySQL）
+        // 6. 输出到控制台（或 Kafka / MySQL）
 //        riskResults.addSink(new ExternalSystemSink());
         riskResults.addSink(new MysqlRiskSink());
 
