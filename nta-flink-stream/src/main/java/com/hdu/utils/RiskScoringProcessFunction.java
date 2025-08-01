@@ -14,11 +14,10 @@ import java.util.HashSet;
 public class RiskScoringProcessFunction extends ProcessWindowFunction<UnifiedLog, RiskResult, String, TimeWindow> {
 
     @Override
-    public void process(String phoneNumber,
+    public void process(String adslAccount,
                         Context context,
                         Iterable<UnifiedLog> logs,
                         Collector<RiskResult> out) {
-//        System.out.println("窗口触发：" + phoneNumber + "，窗口时间：" + context.window());
         boolean hasHighRisk = false;
         boolean hasMediumRisk = false;
         boolean hasLowRisk = false;
@@ -66,22 +65,22 @@ public class RiskScoringProcessFunction extends ProcessWindowFunction<UnifiedLog
             riskLevel = "low";
         }
 
-        try (Jedis jedis = RedisClient.get()) {
-            String redisKey = "vpn:risk:" + phoneNumber;
-            String redisCountKey = "vpn:count:" + phoneNumber;
-
-            jedis.incr(redisCountKey);
-            jedis.expire(redisCountKey, 3600); // 1小时过期
-            jedis.setex(redisKey, 3600, riskLevel);
-        }
+//        try (Jedis jedis = RedisClient.get()) {
+//            String redisKey = "vpn:risk:" + adslAccount;
+//            String redisCountKey = "vpn:count:" + adslAccount;
+//
+//            jedis.incr(redisCountKey);
+//            jedis.expire(redisCountKey, 3600); // 1小时过期
+//            jedis.setex(redisKey, 3600, riskLevel);
+//        }
 
         RiskResult result = new RiskResult();
-        result.setPhoneNumber(phoneNumber);
         result.setRiskLevel(riskLevel);
         result.setWindowStartTime(context.window().getStart());
         result.setWindowEndTime(context.window().getEnd());
         result.setMsg(String.join(" | ", messages));
         result.setStatus("NEW");
+        result.setAdslAccount(adslAccount);
         out.collect(result);
     }
 }

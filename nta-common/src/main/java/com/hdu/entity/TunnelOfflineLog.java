@@ -23,6 +23,13 @@ public class TunnelOfflineLog implements Serializable {
     private Long totalBytes;            // 流总大小（单位 Byte）
     private Integer uid = 1;
 
+
+    private static Long parseLong(String s) {
+        if (s == null || s.isEmpty() || "null".equalsIgnoreCase(s)) {
+            return null;
+        }
+        return Long.valueOf(s);
+    }
     public static TunnelOfflineLog fromString(String line) {
         if (line.isEmpty() || line.startsWith("#")) {
             return null; // 跳过空行或注释行
@@ -31,10 +38,10 @@ public class TunnelOfflineLog implements Serializable {
         // 使用 -1 保证末尾空字段不丢失
         String[] parts = line.split(",", -1);
 
-        // 检查字段数是否为3
-        if (parts.length != 3) {
-            throw new IllegalArgumentException("字段数量不正确，期望3个字段，实际：" + parts.length);
-        }
+        // 检查字段数是否为4
+//        if (parts.length != 4) {
+//            throw new IllegalArgumentException("字段数量不正确，期望4个字段，实际：" + parts.length);
+//        }
 
         TunnelOfflineLog log = new TunnelOfflineLog();
         log.setFlowId(parts[0]);
@@ -42,7 +49,7 @@ public class TunnelOfflineLog implements Serializable {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         log.setOfflineTime(LocalDateTime.parse(parts[1], formatter));
 
-        log.setTotalBytes(parts[2].isEmpty() ? null : Long.valueOf(parts[2]));
+        log.setTotalBytes(parseLong(parts[2]));
 
         return log;
     }

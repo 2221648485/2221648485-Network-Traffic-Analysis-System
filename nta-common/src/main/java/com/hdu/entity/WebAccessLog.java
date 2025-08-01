@@ -45,10 +45,10 @@ public class WebAccessLog implements Serializable {
         }
         // 以逗号分隔字段
         String[] parts = line.split(",", -1);
-        if (parts.length != 20) {
-            // 字段数不对，返回null或抛异常
-            throw new IllegalArgumentException("字段数量不正确，期望20个字段，实际：" + parts.length);
-        }
+//        if (parts.length != 21) {
+//            // 字段数不对，返回null或抛异常
+//            throw new IllegalArgumentException("字段数量不正确，期望21个字段，实际：" + parts.length);
+//        }
         WebAccessLog log = new WebAccessLog();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         log.setTime(LocalDateTime.parse(parts[0], formatter));

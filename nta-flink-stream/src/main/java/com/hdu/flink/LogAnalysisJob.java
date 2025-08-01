@@ -1,5 +1,6 @@
 package com.hdu.flink;
 
+import com.hdu.config.KafkaConfig;
 import com.hdu.entity.*;
 import com.hdu.result.RiskResult;
 import com.hdu.sink.ExternalSystemSink;
@@ -27,8 +28,8 @@ import java.util.Properties;
 @Slf4j
 public class LogAnalysisJob {
 
+    private static final KafkaConfig kafkaConfig = ConfigUtils.getKafkaConfig();
     public static void main(String[] args) throws Exception {
-        String path = "F:\\flink\\checkpoints";
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         env.setParallelism(6);
@@ -41,22 +42,21 @@ public class LogAnalysisJob {
 
         // 1. Kafka 配置
         Properties props = new Properties();
-//        props.setProperty("bootstrap.servers", "localhost:9092");
-        props.setProperty("bootstrap.servers", "kafka:9092");
-        props.setProperty("group.id", "vpn-analysis-group");
+        props.setProperty("bootstrap.servers", kafkaConfig.getBootstrapServers());
+        props.setProperty("group.id", kafkaConfig.getGroupId());
 
         FlinkKafkaConsumer<String> kafkaSource = new FlinkKafkaConsumer<>(
-                "test",
+                "lingyu-log",
                 new SimpleStringSchema(),
                 props
         );
-        kafkaSource.setStartFromLatest();
 
         // 2. 从 Kafka 中读取并统一为 UnifiedLog
         DataStream<UnifiedLog> unifiedStream = env
                 .addSource(kafkaSource)
                 .map(ParseUtils::parseToUnifiedLog)
                 .filter(Objects::nonNull);
+        unifiedStream.print();
         // 3. 时间戳与水位线
         DataStream<UnifiedLog> unifiedWithWatermark = unifiedStream
                 .assignTimestampsAndWatermarks(WatermarkStrategy
@@ -67,11 +67,11 @@ public class LogAnalysisJob {
         // 4. 风险检测
         DataStream<RiskResult> riskResults = unifiedWithWatermark
                 // 先让 RedisBlacklistUpdaterFunction 周期刷新黑名单缓存，并透传数据
-                .flatMap(new RedisBlacklistUpdaterFunction())
+//                .flatMap(new RedisBlacklistUpdaterFunction())
                 // 1. 识别所有可能的翻墙行为日志
                 .filter(VPNRuleUtils::isPotentialVpnLog)
-                // 2. 使用手机号作为用户标识聚合
-                .keyBy(UnifiedLog::getPhoneNumber)
+                // 2. 使用adsl账号作为用户标识聚合
+                .keyBy(UnifiedLog::getAdslAccount)
                 // 3. 滚动 5 分钟窗口
                 .window(TumblingEventTimeWindows.of(Time.minutes(1)))
                 // 4. 评分与模型置信度分析
@@ -79,11 +79,11 @@ public class LogAnalysisJob {
 
         log.info("riskResults:{}", riskResults);
         // 5. 输出到控制台（或 Kafka / MySQL）
-        riskResults.addSink(new ExternalSystemSink());
+//        riskResults.addSink(new ExternalSystemSink());
         riskResults.addSink(new MysqlRiskSink());
 
         // 发送到 Kafka 封禁队列
-        KafkaSink<RiskResult> kafkaSink = RiskResultKafkaSink.build("kafka:9092", "ban-topic");
+        KafkaSink<RiskResult> kafkaSink = RiskResultKafkaSink.build(kafkaConfig.getBootstrapServers(), "ban-topic");
         riskResults.sinkTo(kafkaSink);
 
         env.execute("VPN & Sensitive Access Detection Job");

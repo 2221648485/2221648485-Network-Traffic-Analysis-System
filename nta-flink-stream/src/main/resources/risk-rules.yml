@@ -1,6 +1,9 @@
 sensitiveSiteTypes:
   - 涉恐
   - 暴恐
+  - 涉政
+  - 宗教
+  - 翻墙
   - 极端
   - 敏感
   - 疆独

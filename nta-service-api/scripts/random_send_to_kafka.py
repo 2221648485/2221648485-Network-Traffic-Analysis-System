@@ -161,5 +161,6 @@ def send_logs(batch_size=1000, target_per_second=100000):
         producer.flush()
         producer.close()
 
+
 if __name__ == "__main__":
     send_logs(batch_size=1000, target_per_second=10000)

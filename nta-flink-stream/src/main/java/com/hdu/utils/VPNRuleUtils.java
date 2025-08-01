@@ -1,6 +1,6 @@
 package com.hdu.utils;
 
-import com.hdu.entity.RiskRules;
+import com.hdu.config.RiskRules;
 import com.hdu.entity.UnifiedLog;
 import com.hdu.entity.BlacklistStore;
 

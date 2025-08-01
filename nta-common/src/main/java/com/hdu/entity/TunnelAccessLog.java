@@ -35,16 +35,31 @@ public class TunnelAccessLog implements Serializable {
     private Long downBytes;            // 下行包大小（单位Byte）
     private Integer uid = 1;           // 解析批次标识（如有分页或分批需求）
 
+
+    private static Integer parseInteger(String s) {
+        if (s == null || s.isEmpty() || "null".equalsIgnoreCase(s)) {
+            return null;
+        }
+        return Integer.valueOf(s);
+    }
+
+    private static Long parseLong(String s) {
+        if (s == null || s.isEmpty() || "null".equalsIgnoreCase(s)) {
+            return null;
+        }
+        return Long.valueOf(s);
+    }
+
     public static TunnelAccessLog fromString(String line) {
         if (line.isEmpty() || line.startsWith("#")) {
             return null; // 跳过空行或注释行
         }
         // 按逗号分割，-1保证末尾空字段不丢失
         String[] parts = line.split(",", -1);
-        // 该日志格式字段数为17个
-        if (parts.length != 17) {
-            throw new IllegalArgumentException("字段数量不正确，期望17个字段，实际：" + parts.length);
-        }
+        // 该日志格式字段数为18个
+//        if (parts.length != 18) {
+//            throw new IllegalArgumentException("字段数量不正确，期望18个字段，实际：" + parts.length);
+//        }
 
         TunnelAccessLog log = new TunnelAccessLog();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -63,10 +78,10 @@ public class TunnelAccessLog implements Serializable {
         log.setTool(parts[12]);
 
         // 端口和流量字段，需判空再转换
-        log.setClientPort(parts[13].isEmpty() ? null : Integer.valueOf(parts[13]));
-        log.setServerPort(parts[14].isEmpty() ? null : Integer.valueOf(parts[14]));
-        log.setUpBytes(parts[15].isEmpty() ? null : Long.valueOf(parts[15]));
-        log.setDownBytes(parts[16].isEmpty() ? null : Long.valueOf(parts[16]));
+        log.setClientPort(parseInteger(parts[13]));
+        log.setServerPort(parseInteger(parts[14]));
+        log.setUpBytes(parseLong(parts[15]));
+        log.setDownBytes(parseLong(parts[16]));
         return log;
     }
 

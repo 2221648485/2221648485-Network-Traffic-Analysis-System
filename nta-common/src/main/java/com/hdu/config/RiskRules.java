@@ -1,4 +1,4 @@
-package com.hdu.entity;
+package com.hdu.config;
 
 import lombok.Data;
 

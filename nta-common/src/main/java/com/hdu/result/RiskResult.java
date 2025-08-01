@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Set;
 
 @Data
@@ -21,6 +22,7 @@ public class RiskResult {
     private String msg; // 信息
     private LocalDateTime createTime; // 创建时间
     private String status; // 状态
+    private String adslAccount; // ADSL账号
 
 
     public void setWindowStartTime(Long time) {
@@ -32,7 +34,6 @@ public class RiskResult {
     }
 
     private LocalDateTime parseTime(Long time) {
-        ZoneId zoneId = ZoneId.systemDefault();
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(time), zoneId);
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneOffset.UTC);
     }
 }

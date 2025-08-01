@@ -1,0 +1,12 @@
+mysql:
+  url: jdbc:mysql://localhost:3306/Network_Traffic_Analysis_System?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+  username: root
+  password: 123456
+
+redis:
+  host: 127.0.0.1
+  port: 6379
+
+kafka:
+  bootstrapServers: 10.249.46.48:9092
+  groupId: vpn-analysis-group

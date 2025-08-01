@@ -38,9 +38,9 @@ public class ForeignAppAccessLog implements Serializable {
         String[] parts = line.split(",", -1);
 
         // 校验字段数量
-        if (parts.length != 8) {
-            throw new IllegalArgumentException("字段数量不正确，期望8个字段，实际：" + parts.length);
-        }
+//        if (parts.length != 9) {
+//            throw new IllegalArgumentException("字段数量不正确，期望9个字段，实际：" + parts.length);
+//        }
 
         ForeignAppAccessLog log = new ForeignAppAccessLog();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

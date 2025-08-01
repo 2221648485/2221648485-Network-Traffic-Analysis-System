@@ -1,6 +1,8 @@
 package com.hdu.sink;
 
+import com.hdu.config.MysqlConfig;
 import com.hdu.result.RiskResult;
+import com.hdu.utils.ConfigUtils;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 
@@ -17,14 +19,13 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class MysqlRiskSink extends RichSinkFunction<RiskResult> {
+    private static final MysqlConfig mysqlConfig = ConfigUtils.getMysqlConfig();
 
     // 数据库连接配置（抽取为常量）
-//    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/Network-Traffic-Analysis-System";
-    private static final String JDBC_URL = "jdbc:mysql://mysql:3306/Network_Traffic_Analysis_System?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai";
-
-    private static final String USERNAME = "root";
-    private static final String PASSWORD = "123456";
-    private static final String INSERT_SQL = "INSERT INTO risk_result (phone_number, risk_level, window_start, window_end, msg, create_time, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    private static final String JDBC_URL = mysqlConfig.getUrl();
+    private static final String USERNAME = mysqlConfig.getUsername();
+    private static final String PASSWORD = mysqlConfig.getPassword();
+    private static final String INSERT_SQL = "INSERT INTO risk_result (phone_number, risk_level, window_start, window_end, msg, create_time, status, adsl_account) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     private static final int BATCH_SIZE = 100; // 批量插入
     private static final long FLUSH_INTERVAL_MS = 2000; // 2秒定时刷新批量数据
     private Connection conn;
@@ -55,6 +56,7 @@ public class MysqlRiskSink extends RichSinkFunction<RiskResult> {
             ps.setString(5, risk.getMsg());
             ps.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
             ps.setString(7, risk.getStatus());
+            ps.setString(8, risk.getAdslAccount());
             ps.addBatch();
 
             buffer.add(risk);

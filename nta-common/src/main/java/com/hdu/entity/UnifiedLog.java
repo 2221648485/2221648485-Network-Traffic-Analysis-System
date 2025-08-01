@@ -19,7 +19,7 @@ public class UnifiedLog implements Serializable {
     private String phoneNumber;        // 手机号
     private String imsi;               // IMSI
     private String imei;               // IMEI
-    private String adslAccount;        // ADSL账号
+    private String  adslAccount;        // ADSL账号
     private String clientIp;           // 客户端IP
     private String serverIp;           // 服务器IP
     private String clientRegion;       // 客户端地区

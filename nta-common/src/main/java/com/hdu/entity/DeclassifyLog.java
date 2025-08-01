@@ -46,9 +46,9 @@ public class DeclassifyLog implements Serializable {
         String[] parts = line.split(",", -1);
 
         // 应该有 18 个字段
-        if (parts.length != 18) {
-            throw new IllegalArgumentException("字段数量不正确，期望18个字段，实际：" + parts.length);
-        }
+//        if (parts.length != 19) {
+//            throw new IllegalArgumentException("字段数量不正确，期望19个字段，实际：" + parts.length);
+//        }
 
         DeclassifyLog log = new DeclassifyLog();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

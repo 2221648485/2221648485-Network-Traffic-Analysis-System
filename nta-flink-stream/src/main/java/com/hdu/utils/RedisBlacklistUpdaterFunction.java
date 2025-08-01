@@ -22,7 +22,7 @@ public class RedisBlacklistUpdaterFunction extends RichFlatMapFunction<UnifiedLo
     private transient ScheduledExecutorService scheduler;
 
     // Redis 配置
-    private final String redisHost = "localhost";
+    private final String redisHost = "redis";
     private final int redisPort = 6379;
 
     // 黑名单 Redis Key
