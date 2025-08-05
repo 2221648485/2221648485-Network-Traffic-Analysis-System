@@ -3,6 +3,7 @@ package com.hdu.contorller;
 import com.hdu.result.Result;
 import com.hdu.service.CockpitService;
 import com.hdu.vo.MetricVO;
+import com.hdu.vo.VpnVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -29,4 +30,9 @@ public class CockpitController {
         return Result.success(cockpitService.getMetrics());
     }
 
+    @GetMapping("/vpn")
+    @Operation(summary = "获取VPN指标")
+    public Result<VpnVO> getVpnMetrics() {
+        return Result.success(cockpitService.getVpnMetrics());
+    }
 }

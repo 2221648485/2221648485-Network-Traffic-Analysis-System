@@ -1,27 +1,25 @@
 package com.hdu.utils;
 
 import com.hdu.entity.UnifiedLog;
-import com.hdu.vo.UserPortrait;
+import com.hdu.entity.FlowImage;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 
-import javax.naming.Context;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
-public class UserPortraitWindowFunction extends ProcessWindowFunction<
-        UnifiedLog, UserPortrait, String, TimeWindow> {
+public class FlowImageWindowFunction extends ProcessWindowFunction<
+        UnifiedLog, FlowImage, String, TimeWindow> {
 
     @Override
     public void process(String flowId,
                         Context context,
                         Iterable<UnifiedLog> logs,
-                        Collector<UserPortrait> out) {
+                        Collector<FlowImage> out) {
         int i = 0;
-        String phoneNumber = "";
+        String adslAccount = "";
         long totalUp = 0, totalDown = 0;
         Set<String> sites = new HashSet<>();
         Set<String> tools = new HashSet<>();
@@ -33,8 +31,8 @@ public class UserPortraitWindowFunction extends ProcessWindowFunction<
         for (UnifiedLog log : logs) {
             i ++;
             // 取手机号优先非空
-            if (phoneNumber == "" || log.getPhoneNumber() != "") {
-                phoneNumber = log.getPhoneNumber();
+            if (log.getType().equals("tw_act")) {
+                adslAccount = log.getAdslAccount();
             }
 
             // 上线时间取最早的time字段
@@ -67,8 +65,12 @@ public class UserPortraitWindowFunction extends ProcessWindowFunction<
                 tunnelType = log.getTunnelType();
             }
         }
-        UserPortrait u = new UserPortrait(flowId, phoneNumber, startTime, endTime,
+        FlowImage u = new FlowImage(flowId, adslAccount, startTime, endTime,
                 totalUp, totalDown, sites, tools, tunnelType, totalBytes, null);
         out.collect(u);
+    }
+
+    private static boolean notEmpty(String str) {
+        return str != null && !str.trim().isEmpty();
     }
 }

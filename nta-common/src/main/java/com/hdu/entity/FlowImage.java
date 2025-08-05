@@ -1,4 +1,4 @@
-package com.hdu.vo;
+package com.hdu.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,9 +12,9 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserPortrait implements Serializable {
+public class FlowImage implements Serializable {
     private String flowId;
-    private String phoneNumber;
+    private String adslAccount;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private long totalUpBytes;
@@ -29,7 +29,7 @@ public class UserPortrait implements Serializable {
     public String toString() {
         return "\n【用户画像】\n" +
                 "流水ID       ：" + flowId + "\n" +
-                "手机号       ：" + phoneNumber + "\n" +
+                "学号       ：" + adslAccount + "\n" +
                 "会话开始时间 ：" + startTime + "\n" +
                 "会话结束时间 ：" + endTime + "\n" +
                 "上行流量总计 ：" + totalUpBytes + " 字节\n" +

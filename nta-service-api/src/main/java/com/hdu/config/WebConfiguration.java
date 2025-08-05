@@ -1,5 +1,6 @@
 package com.hdu.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hdu.json.JacksonObjectMapper;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -20,7 +21,7 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class WebConfiguration extends WebMvcConfigurationSupport {
-
+    private final ObjectMapper jacksonObjectMapper;
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
@@ -64,9 +65,9 @@ public class WebConfiguration extends WebMvcConfigurationSupport {
         // 创建一个消息转换器对象
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         // 为消息转换器设置一个对象转换器 将java对象序列化为json数据
-        converter.setObjectMapper(new JacksonObjectMapper());
+        converter.setObjectMapper(jacksonObjectMapper);
         // 将自己的消息转换器加入到容器中
-        converters.add(0,converter);
+//        converters.add(0,converter);
     }
 
 }

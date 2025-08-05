@@ -13,5 +13,5 @@ public interface RiskResultMapper {
 
     void update(RiskResult r);
 
-    int getByLevel(@Param("level") String level, @Param("begin") LocalDateTime begin,@Param("end") LocalDateTime end);
+    int getByLevel(@Param("levelList") List<String> levelList, @Param("begin") LocalDateTime begin,@Param("end") LocalDateTime end);
 }

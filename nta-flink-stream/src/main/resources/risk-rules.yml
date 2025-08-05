@@ -2,6 +2,7 @@ sensitiveSiteTypes:
   - 涉恐
   - 暴恐
   - 涉政
+  - 邪教
   - 宗教
   - 翻墙
   - 极端
@@ -13,15 +14,19 @@ sensitiveSiteTypes:
   - 煽动
 
 vpnSni:
-  - vpn
-  - ssr
+  - OPENVPN
+  - SS
+  - SSL
+  - SSR
+  - VLESS
   - shadowsocks
   - lantern
   - tor
   - outline
   - wireguard
   - surfshark
-  - expressvpn
+  - TROJAN
+  - VMESS
 
 sensitivePorts:
   - 1080

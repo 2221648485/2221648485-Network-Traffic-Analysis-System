@@ -24,7 +24,7 @@ public class RiskScoringProcessFunction extends ProcessWindowFunction<UnifiedLog
         HashSet<String> messages = new HashSet<>();
         String phoneNumber = "";
         for (UnifiedLog log : logs) {
-            if (phoneNumber == "" || log.getPhoneNumber() != "") {
+            if (log.getPhoneNumber() != "") {
                 phoneNumber = log.getPhoneNumber();
             }
             if (VPNRuleUtils.isInIocBlacklist(log)) {
@@ -44,17 +44,17 @@ public class RiskScoringProcessFunction extends ProcessWindowFunction<UnifiedLog
             }
 
             if (VPNRuleUtils.isTlsSniVpn(log)) {
-                hasMediumRisk = true;
+                hasLowRisk = true;
                 messages.add("疑似VPN工具流量：" + log.getTool());
             } else if (VPNRuleUtils.isDnsForeignFailed(log)) {
                 hasMediumRisk = true;
-                messages.add("DNS异常翻墙：" + log.getSiteUrl());
+                messages.add("DNS异常翻墙：" + log.getServerRegion());
             } else if (VPNRuleUtils.isConnectSensitivePorts(log)) {
                 hasMediumRisk = true;
                 messages.add("连接敏感端口：" + log.getServerPort());
-            } else {
+            } else if (VPNRuleUtils.isForeignAccess(log)){
                 hasLowRisk = true;
-                messages.add("境外访问行为：" + log.getSiteUrl());
+                messages.add("境外访问行为：" + log.getAppName());
             }
         }
 

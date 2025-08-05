@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.hdu.mapper.mysql.CockpitMysqlMapper">
+
+    <select id="getRealtimeSessions" resultType="java.lang.Integer">
+        select count(*)
+        from user_portrait
+        where start_time IS NOT NULL
+          AND start_time >= #{begin}
+          AND end_time IS NULL;
+    </select>
+</mapper>

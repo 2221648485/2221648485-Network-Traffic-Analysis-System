@@ -21,17 +21,15 @@ public class VPNRuleUtils {
     public static boolean isDnsForeignFailed(UnifiedLog log) {
         if (log == null) return false;
         return typeEquals(log, "declassify_act")
-                && stringEqualsIgnoreCase(log.getAppProtocol(), "dns")
-                && contains(log.getServerRegion(), "境外")
-                && containsAnyKeyword(safeLower(log.getAppInfo()), rules.getDnsFailedKeywords());
+                && !contains(log.getServerRegion(), "中国");
     }
 
     public static boolean isTlsSniVpn(UnifiedLog log) {
         if (log == null) return false;
-        return typeEquals(log, "declassify_act")
+        return (typeEquals(log, "declassify_act")
                 && stringEqualsIgnoreCase(log.getAppProtocol(), "tls")
                 && notEmpty(log.getHostName())
-                && containsAnyKeyword(log.getHostName().toLowerCase(), rules.getVpnSni());
+                && containsAnyKeyword(log.getHostName().toLowerCase(), rules.getVpnSni())) || (typeEquals(log, "tw_act") && notEmpty(log.getTool()));
     }
 
     public static boolean isConnectSensitivePorts(UnifiedLog log) {
@@ -80,5 +78,9 @@ public class VPNRuleUtils {
 
     private static String safeLower(String str) {
         return str == null ? "" : str.toLowerCase();
+    }
+
+    public static boolean isForeignAccess(UnifiedLog log) {
+        return typeEquals(log, "app_act") && notEmpty(log.getAppName());
     }
 }

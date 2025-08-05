@@ -20,7 +20,7 @@ public class RiskAlertTask {
     private final RiskResultMapper riskResultMapper;
     private final UserActionService userActionService;
 
-    @Scheduled(cron = "0 0/5 * * * ?")
+//    @Scheduled(cron = "0 0/5 * * * ?")
     public void processRecentRiskResults() {
         LocalDateTime endTime = LocalDateTime.now();
         LocalDateTime startTime = endTime.minusMinutes(6);

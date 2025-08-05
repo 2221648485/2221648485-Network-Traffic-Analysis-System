@@ -42,7 +42,7 @@ pagehelper:
 
 pa:
   api:
-    base-url: http://pa-device-ip
+    base-url: 192.168.102.100
     access-token:
 
 aaa:

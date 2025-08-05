@@ -28,8 +28,8 @@ public class PanabitSyncScheduler {
 
     private static final String PYTHON_EXEC = "python";
 
-//    @Scheduled(cron = "0 0 8 * * ?") // 每天早上 8 点
-    @Scheduled(cron = "*/10 * * * * ?") // 测试 每10秒一次
+    @Scheduled(cron = "0 0 8 * * ?") // 每天早上 8 点
+//    @Scheduled(cron = "*/10 * * * * ?") // 测试 每10秒一次
     public void runPanabitSyncScript() {
         log.info("⏰ 开始执行 Panabit 黑名单同步脚本...");
 

@@ -5,15 +5,13 @@ import com.hdu.entity.*;
 import com.hdu.result.RiskResult;
 import com.hdu.sink.*;
 import com.hdu.utils.*;
-import com.hdu.vo.UserPortrait;
+import com.hdu.entity.FlowImage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.connector.kafka.sink.KafkaSink;
 import org.apache.flink.contrib.streaming.state.EmbeddedRocksDBStateBackend;
-import org.apache.flink.contrib.streaming.state.RocksDBStateBackend;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
@@ -56,7 +54,7 @@ public class LogAnalysisJob {
                 .addSource(kafkaSource)
                 .map(ParseUtils::parseToUnifiedLog)
                 .filter(Objects::nonNull);
-//        unifiedStream.addSink(new ExcelSink("F:\\flink\\unified_log.xlsx"));
+        unifiedStream.addSink(new MysqlTestSink());
         // 3. 时间戳与水位线
         DataStream<UnifiedLog> unifiedWithWatermark = unifiedStream
                 .assignTimestampsAndWatermarks(WatermarkStrategy
@@ -69,9 +67,9 @@ public class LogAnalysisJob {
                 // 先让 RedisBlacklistUpdaterFunction 周期刷新黑名单缓存，并透传数据
                 .flatMap(new RedisBlacklistUpdaterFunction())
                  // 过滤掉没有学号的信息
-                .filter(log -> log.getAdslAccount() != null)
+                .filter(log -> log.getAdslAccount() != null && !log.getAdslAccount().equals("null"))
                 // 1. 识别所有可能的翻墙行为日志
-                .filter(VPNRuleUtils::isPotentialVpnLog)
+//                .filter(VPNRuleUtils::isPotentialVpnLog)
                 // 2. 使用adsl账号作为用户标识聚合
                 .keyBy(UnifiedLog::getAdslAccount)
                 // 3. 滚动 5 分钟窗口
@@ -80,18 +78,20 @@ public class LogAnalysisJob {
                 .process(new RiskScoringProcessFunction()); // 此类中已接入 Redis 和模型评分
 
         // 5. 用户画像
-        DataStream<UserPortrait> userPortraits = unifiedWithWatermark
+        DataStream<FlowImage> flowImages = unifiedWithWatermark
                 .filter(log -> log.getFlowId() != null)
                 .keyBy(UnifiedLog::getFlowId)
                 .window(TumblingEventTimeWindows.of(Time.minutes(1)))
-                .process(new UserPortraitWindowFunction());
+                .process(new FlowImageWindowFunction());
 
-        userPortraits.addSink(new MysqlPortraitSink());
+        flowImages.addSink(new MysqlPortraitSink());
         log.info("riskResults:{}", riskResults);
         // 6. 输出到控制台（或 Kafka / MySQL）
 //        riskResults.addSink(new ExternalSystemSink());
         riskResults.addSink(new MysqlRiskSink());
 
+        // 低风险级就不上报了
+        riskResults = riskResults.filter(riskResult -> !riskResult.getRiskLevel().equals("low"));
         // 发送到 Kafka 封禁队列
         KafkaSink<RiskResult> kafkaSink = RiskResultKafkaSink.build(kafkaConfig.getBootstrapServers(), "ban-topic");
         riskResults.sinkTo(kafkaSink);

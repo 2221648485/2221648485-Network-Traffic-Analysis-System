@@ -28,7 +28,7 @@ def generate_web_act():
         "", "252050314",  # IMEI, ADSL账号
         random.choice(["西藏流亡国会", "世界维吾尔代表大会", "TG频道", "YouTube", "Twitter", "大纪元", "新唐人"]),
         random.choice(["tibetanparliament.org", "uyghurcongress.org", "t.me/vpninfo", "youtube.com", "twitter.com", "epochtimes.com", "ntdtv.com"]),
-        random.choice(["涉藏", "涉恐", "涉证", "邪教", "非法集会", "反动"]),
+        random.choice(["涉藏", "涉恐", "涉政", "邪教", "非法集会", "反动"]),
         fake.ipv4_private(),
         fake.ipv4_public(),
         random.choice(["中国 上海", "中国 杭州", "中国 广州", "中国 深圳", "中国 北京"]),
@@ -139,7 +139,7 @@ def send_logs(batch_size=1000, target_per_second=100000):
         while True:
             batch = generate_batch_logs(batch_size)
             for msg in batch:
-                print(msg)
+                # print(msg)
                 producer.send(KAFKA_TOPIC, msg)
             # 不等待 flush，会自动批处理提升性能
             # producer.flush()  # 可选：降低延迟但增加负载
@@ -164,4 +164,4 @@ def send_logs(batch_size=1000, target_per_second=100000):
 
 
 if __name__ == "__main__":
-    send_logs(batch_size=1, target_per_second=1)
+    send_logs(batch_size=5, target_per_second=500)

@@ -23,7 +23,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class KafkaConsumerConfig {
 
-    private final ObjectMapper jacksonObjectMapper = new JacksonObjectMapper();
+    private final ObjectMapper jacksonObjectMapper;
     @Bean
     public ConsumerFactory<String, RiskResult> consumerFactory() {
         Map<String, Object> props = new HashMap<>();

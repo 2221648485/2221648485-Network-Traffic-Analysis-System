@@ -28,8 +28,11 @@
     <select id="getByLevel" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM risk_result
-        WHERE risk_level = #{level}
-          AND create_time &gt;= #{begin}
-          AND create_time &lt;= #{end}
+        WHERE risk_level IN
+        <foreach collection="levelList" item="level" open="(" separator="," close=")">
+            #{level}
+        </foreach>
+        AND create_time &gt;= #{begin}
+        AND create_time &lt;= #{end}
     </select>
 </mapper>
