@@ -7,7 +7,7 @@ import java.io.InputStream;
 public class ConfigUtils {
     private static final RiskRules rules;
     private static final Config config;
-
+    private static final String configFilePath = "config-dev.yml";
     static {
         Yaml yaml = new Yaml();
         try (InputStream in = ConfigUtils.class.getClassLoader().getResourceAsStream("risk-rules.yml")) {
@@ -19,13 +19,13 @@ public class ConfigUtils {
 
     static {
         Yaml yaml = new Yaml();
-        try (InputStream in = ConfigUtils.class.getClassLoader().getResourceAsStream("config.yml")) {
+        try (InputStream in = ConfigUtils.class.getClassLoader().getResourceAsStream(configFilePath)) {
             if (in == null) {
-                throw new RuntimeException("config.yml 配置文件未找到");
+                throw new RuntimeException(configFilePath + " 配置文件未找到");
             }
             config = yaml.loadAs(in, Config.class);
         } catch (Exception e) {
-            throw new RuntimeException("无法加载配置文件config.yml", e);
+            throw new RuntimeException("无法加载配置文件" + configFilePath, e);
         }
     }
 

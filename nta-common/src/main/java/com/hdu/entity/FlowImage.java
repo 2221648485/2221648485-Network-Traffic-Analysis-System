@@ -13,7 +13,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FlowImage implements Serializable {
-    private Integer id;
     private String flowId;
     private String adslAccount;
     private LocalDateTime startTime;

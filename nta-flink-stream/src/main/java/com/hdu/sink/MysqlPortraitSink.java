@@ -21,7 +21,7 @@ public class MysqlPortraitSink extends RichSinkFunction<FlowImage> {
 
     //  使用 ON DUPLICATE KEY UPDATE 以 flow_id 做幂等更新
     private static final String UPSERT_SQL =
-            "INSERT INTO user_portrait (" +
+            "INSERT INTO flow_image (" +
                     "flow_id, adsl_account, start_time, end_time, " +
                     "total_up_bytes, total_down_bytes, total_bytes, " +
                     "site_names, tools, tunnel_type, create_time) " +
