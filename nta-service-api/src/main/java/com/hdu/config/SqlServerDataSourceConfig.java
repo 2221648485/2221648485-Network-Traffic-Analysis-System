@@ -31,7 +31,7 @@ class SqlServerDataSourceProperties {
 @EnableConfigurationProperties(SqlServerDataSourceProperties.class)
 @Configuration
 @MapperScan(
-        basePackages = "com.hdu.mapper",
+        basePackages = "com.hdu.mapper.sqlserver",
         sqlSessionFactoryRef = "sqlserverSqlSessionFactory"
 )
 public class SqlServerDataSourceConfig {
@@ -62,6 +62,9 @@ public class SqlServerDataSourceConfig {
     public SqlSessionFactory sqlserverSqlSessionFactory(@Qualifier("sqlserverDataSource") DataSource dataSource) throws Exception {
         SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
         sessionFactory.setDataSource(dataSource);
+        org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration();
+        configuration.setMapUnderscoreToCamelCase(true);  // 开启驼峰转换
+        sessionFactory.setConfiguration(configuration);  // 应用配置
         sessionFactory.setMapperLocations(
                 new PathMatchingResourcePatternResolver()
                         .getResources("classpath:mapper/sqlserver/*.xml")

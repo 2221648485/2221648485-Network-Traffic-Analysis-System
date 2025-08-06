@@ -22,6 +22,7 @@ public class PortraitContorller {
     @GetMapping("/{id}")
     @Operation(summary = "根据学号对学生画像")
     public Result<UserPortraitsVO> getPortrait(@PathVariable("id") String adslAccount) {
+        log.info("根据学号: {} 对学生画像", adslAccount);
         return Result.success(portraitService.getPortrait(adslAccount));
     }
 

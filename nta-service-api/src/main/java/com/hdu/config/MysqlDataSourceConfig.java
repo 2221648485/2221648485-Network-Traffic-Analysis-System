@@ -32,7 +32,7 @@ class MysqlDataSourceProperties {
 @EnableConfigurationProperties(MysqlDataSourceProperties.class)
 @Configuration
 @MapperScan(
-        basePackages = "com.hdu.mapper",
+        basePackages = "com.hdu.mapper.mysql",
         sqlSessionFactoryRef = "mysqlSqlSessionFactory"
 )
 public class MysqlDataSourceConfig {
@@ -65,6 +65,9 @@ public class MysqlDataSourceConfig {
     public SqlSessionFactory mysqlSqlSessionFactory(@Qualifier("mysqlDataSource") DataSource dataSource) throws Exception {
         SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
         sessionFactory.setDataSource(dataSource);
+        org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration();
+        configuration.setMapUnderscoreToCamelCase(true);  // 开启驼峰转换
+        sessionFactory.setConfiguration(configuration);  // 应用配置
         sessionFactory.setMapperLocations(
                 new PathMatchingResourcePatternResolver()
                         .getResources("classpath:mapper/mysql/*.xml")

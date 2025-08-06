@@ -7,6 +7,8 @@ import com.hdu.vo.UserPortraitsVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PortraitService {
@@ -15,8 +17,9 @@ public class PortraitService {
 
     public UserPortraitsVO getPortrait(String adslAccount) {
         UserPortraitsVO userPortraitsVO = portraitSqlServerMapper.getInfoById(adslAccount);
-        userPortraitsVO.setFlowImages(portraitMysqlMapper.getFlowImagesByAdslAccount(adslAccount));
+        List<FlowImage> flowImagesByAdslAccount = portraitMysqlMapper.getFlowImagesByAdslAccount(adslAccount);
+        userPortraitsVO.setFlowImages(flowImagesByAdslAccount);
         userPortraitsVO.setForeignAppAccessLogs(portraitMysqlMapper.getForeignAppAccessLogsByAdslAccount(adslAccount));
-        return null;
+        return userPortraitsVO;
     }
 }

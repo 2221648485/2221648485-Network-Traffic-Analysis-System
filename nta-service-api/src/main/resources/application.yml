@@ -10,7 +10,8 @@ spring:
       driver-class-name: com.mysql.cj.jdbc.Driver
 
     sqlserver:
-      url: jdbc:sqlserver://192.168.100.202:1433;databaseName=easytong_plus
+#      url: jdbc:sqlserver://192.168.100.202:1433;databaseName=easytong_plus;encrypt=false
+      url: jdbc:sqlserver://localhost:1433;databaseName=master;encrypt=false
       username: sa
       password: Hzsun310012
       driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
@@ -24,14 +25,14 @@ logging:
     com:
       hdu:
         controller: info
-        mapper: OFF
+        mapper: debug
         service: info
 # mybatis相关配置
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
-    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-  mapper-locations: classpath:mapper/*.xml
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:mapper/*/*.xml
   type-aliases-package: com.hdu.entity
 
 # 分页插件相关配置

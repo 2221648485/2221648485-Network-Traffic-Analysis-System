@@ -3,6 +3,7 @@ package com.hdu.json;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
@@ -32,7 +33,15 @@ public class JacksonObjectMapper extends ObjectMapper {
     public JacksonObjectMapper() {
         super();
         //收到未知属性时不报异常
+        // 1. 注册Java 8日期核心模块（关键补充）
+        this.registerModule(new JavaTimeModule());
+
+        // 2. 收到未知属性时不报异常（避免Knife4j内部类序列化失败）
         this.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        // 3. 反序列化时忽略未知属性
+        this.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
 
         //反序列化时，属性不存在的兼容处理
         this.getDeserializationConfig().withoutFeatures(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
