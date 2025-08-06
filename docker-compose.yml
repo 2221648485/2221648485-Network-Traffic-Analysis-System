@@ -3,27 +3,27 @@ version: '3.8'
 services:
   # Zookeeper 是 Kafka 的依赖
   zookeeper:
-    image: registry.cn-hangzhou.aliyuncs.com/zhengqing/zookeeper:3.4.6
+    image: wurstmeister/zookeeper
     container_name: zookeeper
     restart: unless-stopped
     ports:
-      - "2181:2181"
+      - "2181:2181"  # 暴露端口给宿主机（可选）
     networks:
       - flink-net
 
   # Kafka 消息中间件
   kafka:
-    image: registry.cn-hangzhou.aliyuncs.com/zhengqing/kafka:2.13-2.8.0
+    image: wurstmeister/kafka
     container_name: kafka
     restart: unless-stopped
     ports:
-      - "9092:9092"
+      - "9092:9092"  # 本机访问 Kafka 用到（如果 Flink 在主机上运行）
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://192.168.112.109:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://192.168.112.109:9092  # 👈 你的宿主机 IP
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1  #  否则 Flink 的 offset topic 也会爆错
     depends_on:
       - zookeeper
     networks:
@@ -31,23 +31,23 @@ services:
 
   # Redis 缓存服务
   redis:
-    image: registry.cn-hangzhou.aliyuncs.com/zhengqing/redis:6.2
+    image: redis
     container_name: redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "6379:6379"  # 映射到本机（方便你调试）
     networks:
       - flink-net
 
   # MySQL 数据库
   mysql:
-    image: registry.cn-hangzhou.aliyuncs.com/zhengqing/mysql:8.0.33
+    image: mysql:8.0.33
     container_name: mysql
     restart: unless-stopped
     ports:
-      - "3306:3306"
+      - "3306:3306"  # 映射到宿主机，方便本地连接
     environment:
-      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_ROOT_PASSWORD: 123456  # 设置 root 密码
     command:
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_general_ci
@@ -59,15 +59,15 @@ services:
 
   # Flink JobManager
   jobmanager:
-    image: registry.cn-hangzhou.aliyuncs.com/zhengqing/flink:1.18
+    image: flink:1.18
     container_name: jobmanager
     restart: unless-stopped
     ports:
-      - "8081:8081"
-    command: jobmanager
+      - "8081:8081"  # Flink Web UI
+    command: jobmanager  # 启动为 JobManager 模式
     environment:
       - JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8
-      - JOB_MANAGER_RPC_ADDRESS=jobmanager
+      - JOB_MANAGER_RPC_ADDRESS=jobmanager  # 告诉 TaskManager 如何找到它
     volumes:
       - /opt/flink/log/jobmanager:/opt/flink/log
       - /opt/flink/checkpoints:/opt/flink/checkpoints
@@ -80,145 +80,25 @@ services:
 
   # Flink TaskManager
   taskmanager:
-    image: registry.cn-hangzhou.aliyuncs.com/zhengqing/flink:1.18
+    image: flink:1.18
     container_name: taskmanager
     restart: unless-stopped
-    command: taskmanager
+    command: taskmanager  # 启动为 TaskManager 模式
     environment:
       - JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8
-      - JOB_MANAGER_RPC_ADDRESS=jobmanager
+      - JOB_MANAGER_RPC_ADDRESS=jobmanager  # 告诉它怎么连接 JobManager
       - TASK_MANAGER_NUMBER_OF_TASK_SLOTS=4
     volumes:
       - /opt/flink/log/taskmanager:/opt/flink/log
       - /opt/flink/checkpoints:/opt/flink/checkpoints
     depends_on:
       - jobmanager
+
     networks:
       - flink-net
 
-volumes:
-  mysql_data:
 
+# 所有服务共享的自定义网络，容器间可以通过名字互相访问
 networks:
   flink-net:
     driver: bridge
-
-
-
-#version: '3.8'
-#
-#services:
-#  # Zookeeper 是 Kafka 的依赖
-#  zookeeper:
-#    image: wurstmeister/zookeeper
-#    container_name: zookeeper
-#    restart: unless-stopped
-#    ports:
-#      - "2181:2181"  # 暴露端口给宿主机（可选）
-#    networks:
-#      - flink-net
-#
-#  # Kafka 消息中间件
-#  kafka:
-#    image: wurstmeister/kafka
-#    container_name: kafka
-#    restart: unless-stopped
-#    ports:
-#      - "9092:9092"  # 本机访问 Kafka 用到（如果 Flink 在主机上运行）
-#    environment:
-#      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-#      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-#      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://10.249.46.48:9092  # 👈 你的宿主机 IP
-#      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
-#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1  #  否则 Flink 的 offset topic 也会爆错
-#      KAFKA_CREATE_TOPICS: "test:1:1"            #  自动建 test topic（1分区1副本）
-#    depends_on:
-#      - zookeeper
-#    networks:
-#      - flink-net
-#
-#  # Redis 缓存服务
-#  redis:
-#    image: redis
-#    container_name: redis
-#    restart: unless-stopped
-#    ports:
-#      - "6379:6379"  # 映射到本机（方便你调试）
-#    networks:
-#      - flink-net
-#
-#  # MySQL 数据库
-#  mysql:
-#    image: mysql:8.0.33
-#    container_name: mysql
-#    restart: unless-stopped
-#    ports:
-#      - "3306:3306"  # 映射到宿主机，方便本地连接
-#    environment:
-#      MYSQL_ROOT_PASSWORD: 123456  # 设置 root 密码
-#    command:
-#      --character-set-server=utf8mb4
-#      --collation-server=utf8mb4_general_ci
-#      --init-connect='SET NAMES utf8mb4'
-#    volumes:
-#      - mysql_data:/var/lib/mysql  # 持久化数据
-#    networks:
-#      - flink-net
-#
-#  # Flink JobManager
-#  jobmanager:
-#    image: flink:1.18
-#    container_name: jobmanager
-#    restart: unless-stopped
-#    ports:
-#      - "8081:8081"  # Flink Web UI
-#    command: jobmanager  # 启动为 JobManager 模式
-#    environment:
-#      - JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8
-#      - JOB_MANAGER_RPC_ADDRESS=jobmanager  # 告诉 TaskManager 如何找到它
-#    depends_on:
-#      - kafka
-#      - redis
-#      - mysql
-#    networks:
-#      - flink-net
-#
-#  # Flink TaskManager
-#  taskmanager:
-#    image: flink:1.18
-##    container_name: taskmanager
-#    restart: unless-stopped
-#    command: taskmanager  # 启动为 TaskManager 模式
-#    environment:
-#      - JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8
-#      - JOB_MANAGER_RPC_ADDRESS=jobmanager  # 告诉它怎么连接 JobManager
-#      - TASK_MANAGER_NUMBER_OF_TASK_SLOTS=4
-#    depends_on:
-#      - jobmanager
-#    deploy:
-#      replicas: 2  # 从1个TaskManager增加到2个
-#    networks:
-#      - flink-net
-#
-#  sqlserver:
-#    image: mcr.microsoft.com/mssql/server:2019-latest
-#    container_name: sqlserver
-#    restart: unless-stopped
-#    environment:
-#      SA_PASSWORD: "Hzsun310012"  # 注意：必须满足 MSSQL 的密码强度要求
-#      ACCEPT_EULA: "Y"
-#    ports:
-#      - "1433:1433"  # 宿主机可通过 1433 访问 SQL Server
-#    volumes:
-#      - sqlserver_data:/var/opt/mssql  # 数据持久化
-#    networks:
-#      - flink-net
-#
-## 持久化 MySQL 数据
-#volumes:
-#  mysql_data:
-#  sqlserver_data:
-## 所有服务共享的自定义网络，容器间可以通过名字互相访问
-#networks:
-#  flink-net:
-#    driver: bridge

@@ -16,5 +16,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY send_to_kafka.py ./
 
 # 运行脚本
-CMD ["python", "send_to_kafka.py"]
+CMD ["python3", "send_to_kafka.py"]
 

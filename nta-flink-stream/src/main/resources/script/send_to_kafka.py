@@ -2,6 +2,7 @@ import os
 import json
 from kafka import KafkaProducer
 from datetime import datetime, timedelta
+import pytz
 import schedule
 import time
 
@@ -25,6 +26,12 @@ FILE_PREFIX_MAP = {
     'declassify_act': 'declassify_act'
 }
 
+# 上海时区对象
+tz = pytz.timezone('Asia/Shanghai')
+
+def now():
+    return datetime.now(tz)
+
 def load_processed_files():
     if os.path.exists(RECORD_FILE):
         with open(RECORD_FILE, 'r', encoding='utf-8') as f:
@@ -36,7 +43,7 @@ def save_processed_files(data):
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 def clean_old_records(records):
-    today = datetime.now().date()
+    today = now().date()
     cutoff = today - timedelta(days=15)
     return {
         date: files for date, files in records.items()
@@ -45,7 +52,7 @@ def clean_old_records(records):
 
 def is_recent_file(filename, days=2):
     for i in range(days):
-        date_str = (datetime.now() - timedelta(days=i)).strftime('%Y%m%d')
+        date_str = (now() - timedelta(days=i)).strftime('%Y%m%d')
         if date_str in filename:
             return True
     return False
@@ -67,7 +74,7 @@ def process_file(local_path, prefix, producer):
                 send_line_to_kafka(line, prefix, producer)
 
 def main():
-    print(f"[信息] 开始执行任务时间：{datetime.now()}")
+    print(f"[信息] 开始执行任务时间：{now()}")
     producer = KafkaProducer(bootstrap_servers=KAFKA_BROKER)
 
     try:
@@ -76,7 +83,7 @@ def main():
         processed_files = load_processed_files()
         all_processed = set(f for v in processed_files.values() for f in v)
 
-        current_date = datetime.now().strftime('%Y-%m-%d')
+        current_date = now().strftime('%Y-%m-%d')
         if current_date not in processed_files:
             processed_files[current_date] = []
 
@@ -105,7 +112,7 @@ def main():
 
     finally:
         producer.close()
-        print(f"[信息] 任务结束时间：{datetime.now()}")
+        print(f"[信息] 任务结束时间：{now()}")
 
 def job():
     try:
@@ -118,7 +125,7 @@ def job():
         print(f"[异常] 定时任务失败：{e}")
 
 if __name__ == '__main__':
-    t = 1
+    t = 10
     job()
     schedule.every(t).minutes.do(job)
     print(f"[启动] 本地日志到 Kafka 调度器已启动（每 {t} 分钟执行一次）...")

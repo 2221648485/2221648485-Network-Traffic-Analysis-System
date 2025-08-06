@@ -30,7 +30,7 @@ public class LogAnalysisJob {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        env.setParallelism(6);
+        env.setParallelism(4);
         env.setStateBackend(new EmbeddedRocksDBStateBackend(true));
 
 //        // 设置 checkpoint
