@@ -11,6 +11,27 @@ services:
     networks:
       - flink-net
 
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    restart: unless-stopped
+    ports:
+      - "8082:8080"   # 本地访问 Kafka UI 的端口，你可以改成别的避免冲突
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      DYNAMIC_CONFIG_ENABLED: true
+      # 你可以根据需要开启认证，这里简化配置
+    volumes:
+      - /opt/Network-Traffic-Analysis-System/kafkaui/config.yml:/etc/kafkaui/dynamic_config.yaml
+    depends_on:
+      - kafka
+      - zookeeper
+    networks:
+      - flink-net
+
   # Kafka 消息中间件
   kafka:
     image: wurstmeister/kafka
@@ -53,7 +74,7 @@ services:
       --collation-server=utf8mb4_general_ci
       --init-connect='SET NAMES utf8mb4'
     volumes:
-      - /opt/mysql_data:/var/lib/mysql
+      - /opt/Network-Traffic-Analysis-System/mysql_data:/var/lib/mysql
     networks:
       - flink-net
 
@@ -69,8 +90,8 @@ services:
       - JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8
       - JOB_MANAGER_RPC_ADDRESS=jobmanager  # 告诉 TaskManager 如何找到它
     volumes:
-      - /opt/flink/log/jobmanager:/opt/flink/log
-      - /opt/flink/checkpoints:/opt/flink/checkpoints
+      - /opt/Network-Traffic-Analysis-System/flink/log/jobmanager:/opt/flink/log
+      - /opt/Network-Traffic-Analysis-System/flink/checkpoints:/opt/flink/checkpoints
     depends_on:
       - kafka
       - redis
@@ -89,8 +110,8 @@ services:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager  # 告诉它怎么连接 JobManager
       - TASK_MANAGER_NUMBER_OF_TASK_SLOTS=4
     volumes:
-      - /opt/flink/log/taskmanager:/opt/flink/log
-      - /opt/flink/checkpoints:/opt/flink/checkpoints
+      - /opt/Network-Traffic-Analysis-System/flink/log/taskmanager:/opt/flink/log
+      - /opt/Network-Traffic-Analysis-System/flink/checkpoints:/opt/flink/checkpoints
     depends_on:
       - jobmanager
 

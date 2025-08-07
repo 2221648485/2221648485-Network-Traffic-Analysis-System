@@ -1,7 +1,7 @@
 package com.hdu.service;
 
 import com.hdu.entity.FlowImage;
-import com.hdu.mapper.mysql.PortraitMysqlMapper;
+import com.hdu.mapper.mysql.FlowImageMysqlMapper;
 import com.hdu.mapper.sqlserver.PortraitSqlServerMapper;
 import com.hdu.vo.UserPortraitsVO;
 import lombok.RequiredArgsConstructor;
@@ -13,13 +13,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PortraitService {
     private final PortraitSqlServerMapper portraitSqlServerMapper;
-    private final PortraitMysqlMapper portraitMysqlMapper;
+    private final FlowImageMysqlMapper flowImageMysqlMapper;
 
     public UserPortraitsVO getPortrait(String adslAccount) {
         UserPortraitsVO userPortraitsVO = portraitSqlServerMapper.getInfoById(adslAccount);
-        List<FlowImage> flowImagesByAdslAccount = portraitMysqlMapper.getFlowImagesByAdslAccount(adslAccount);
+        List<FlowImage> flowImagesByAdslAccount = flowImageMysqlMapper.getFlowImagesByAdslAccount(adslAccount);
         userPortraitsVO.setFlowImages(flowImagesByAdslAccount);
-        userPortraitsVO.setForeignAppAccessLogs(portraitMysqlMapper.getForeignAppAccessLogsByAdslAccount(adslAccount));
+        userPortraitsVO.setForeignAppAccessLogs(flowImageMysqlMapper.getForeignAppAccessLogsByAdslAccount(adslAccount));
         return userPortraitsVO;
     }
 }

@@ -6,7 +6,7 @@
 
     <select id="getRealtimeSessions" resultType="java.lang.Integer">
         select count(*)
-        from user_portrait
+        from flow_image
         where start_time IS NOT NULL
           AND start_time >= #{begin}
           AND end_time IS NULL;

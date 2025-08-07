@@ -7,7 +7,7 @@ import schedule
 import time
 
 # Kafka 配置
-KAFKA_BROKER = 'localhost:9092'
+KAFKA_BROKER = '192.168.112.109:9092'
 KAFKA_TOPIC = 'lingyu-log'
 
 # 本地日志目录（替代之前的SFTP目录）

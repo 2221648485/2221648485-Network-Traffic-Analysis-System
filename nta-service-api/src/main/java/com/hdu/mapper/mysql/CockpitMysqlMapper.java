@@ -1,5 +1,6 @@
 package com.hdu.mapper.mysql;
 
+import com.hdu.vo.VpnToolsVO;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.mapstruct.Mapper;
@@ -13,7 +14,7 @@ import java.util.Map;
 public interface CockpitMysqlMapper {
     int getRealtimeSessions(@Param("begin") LocalDateTime begin);
 
-    @Select("select DISTINCT tools ,COUNT(*) as count from user_portrait where tools != '' and tools != '未知' GROUP BY tools\n" +
+    @Select("select tools ,COUNT(*) as count from flow_image where tools != '' and tools != '未知' GROUP BY tools\n" +
             "ORDER BY count DESC")
-    Map<String, Integer> getVpnInfo();
+    List<VpnToolsVO> getVpnInfo();
 }

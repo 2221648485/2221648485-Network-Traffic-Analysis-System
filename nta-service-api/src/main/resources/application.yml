@@ -4,14 +4,13 @@ spring:
     name: hdu-traffic-analysis
   datasource:
     mysql:
-      url: jdbc:mysql://localhost:3306/Network_Traffic_Analysis_System
+      url: jdbc:mysql://192.168.112.109:3306/Network_Traffic_Analysis_System
       username: root
       password: 123456
       driver-class-name: com.mysql.cj.jdbc.Driver
 
     sqlserver:
-#      url: jdbc:sqlserver://192.168.100.202:1433;databaseName=easytong_plus;encrypt=false
-      url: jdbc:sqlserver://localhost:1433;databaseName=master;encrypt=false
+      url: jdbc:sqlserver://192.168.100.202:1433;databaseName=easytong_plus;encrypt=false
       username: sa
       password: Hzsun310012
       driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
@@ -53,7 +52,7 @@ aaa:
 
 
     redis:
-      host: localhost
+      host: 192.168.112.109
       #auth: 123456
       database: 0
       port: 6379
@@ -61,7 +60,7 @@ aaa:
   spring:
     kafka:
       consumer:
-        bootstrap-servers: 10.249.46.48:9092
+        bootstrap-servers: 192.168.112.109:9092
         group-id: risk-result-group
         key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
         value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer

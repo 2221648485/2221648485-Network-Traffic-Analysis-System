@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hdu.mapper.mysql.FlowImageMysqlMapper">
+
+    <select id="getHourlyTrendData" resultType="java.lang.Long">
+        SELECT SUM(total_bytes) AS trendData
+        FROM flow_image
+        WHERE start_time IS NOT NULL
+          AND start_time &gt;= #{start} AND start_time &lt; #{end}
+        GROUP BY DATE_FORMAT(start_time, '%H')
+        ORDER BY DATE_FORMAT(start_time, '%H')
+    </select>
+    <select id="getDailyTrendData" resultType="java.lang.Long">
+        SELECT SUM(total_bytes) AS trendData
+        FROM flow_image
+        WHERE start_time IS NOT NULL
+          AND start_time &gt;= #{start} AND start_time &lt; #{end}
+        GROUP BY DATE(start_time)
+        ORDER BY DATE(start_time)
+    </select>
+    <select id="getMonthlyTrendData" resultType="java.lang.Long">
+        SELECT SUM(total_bytes) AS trendData
+        FROM flow_image
+        WHERE start_time IS NOT NULL
+          AND start_time &gt;= #{start} AND start_time &lt; #{end}
+        GROUP BY DATE_FORMAT(start_time, '%Y-%m')
+        ORDER BY DATE_FORMAT(start_time, '%Y-%m')
+    </select>
+</mapper>
